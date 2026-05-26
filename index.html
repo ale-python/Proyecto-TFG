@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sin Límites — Presentación TFG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        electric: '#2563EB',
+        'electric-light': '#3B82F6',
+        'electric-glow': '#60A5FA',
+        'slate-950': '#020617',
+      },
+      fontFamily: {
+        inter: ['Inter', 'sans-serif'],
+        montserrat: ['Montserrat', 'sans-serif'],
+      }
+    }
+  }
+}
+</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; background: #020617; font-family: 'Inter', sans-serif; }
+
+  /* Grid background */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(37,99,235,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37,99,235,0.06) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+  .grid-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, rgba(37,99,235,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Screen system */
+  .screen {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    overflow: hidden;
+  }
+  .screen.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* Nav bar */
+  .nav-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15,23,42,0.9);
+    border: 1px solid rgba(37,99,235,0.3);
+    border-radius: 50px;
+    padding: 8px 16px;
+    backdrop-filter: blur(12px);
+  }
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(96,165,250,0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .nav-dot.active { background: #2563EB; box-shadow: 0 0 8px #2563EB; }
+  .nav-btn {
+    color: #60A5FA;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 2px 8px;
+    transition: color 0.2s;
+  }
+  .nav-btn:hover { color: #fff; }
+  .nav-label {
+    font-size: 11px;
+    color: #64748b;
+    font-family: 'Inter', sans-serif;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  /* Glow effects */
+  .blue-glow { box-shadow: 0 0 30px rgba(37,99,235,0.4), 0 0 60px rgba(37,99,235,0.15); }
+  .blue-glow-sm { box-shadow: 0 0 15px rgba(37,99,235,0.3); }
+  .text-glow { text-shadow: 0 0 30px rgba(59,130,246,0.5); }
+
+  /* Cards */
+  .card-dark {
+    background: rgba(15,23,42,0.8);
+    border: 1px solid rgba(37,99,235,0.2);
+    border-radius: 16px;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+  }
+  .card-dark:hover {
+    border-color: rgba(37,99,235,0.7);
+    box-shadow: 0 0 20px rgba(37,99,235,0.2);
+    transform: translateY(-2px);
+  }
+
+  /* Animated counter */
+  @keyframes countUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .count-animate { animation: countUp 0.6s ease forwards; }
+
+  /* Pulse glow */
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(37,99,235,0.3); }
+    50% { box-shadow: 0 0 40px rgba(37,99,235,0.6), 0 0 80px rgba(37,99,235,0.2); }
+  }
+  .pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+
+  /* Slide in */
+  @keyframes slideInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .anim-left { animation: slideInLeft 0.6s ease forwards; }
+  .anim-right { animation: slideInRight 0.6s ease forwards; }
+  .anim-up { animation: fadeInUp 0.5s ease forwards; }
+  .anim-delay-1 { animation-delay: 0.1s; opacity: 0; }
+  .anim-delay-2 { animation-delay: 0.2s; opacity: 0; }
+  .anim-delay-3 { animation-delay: 0.3s; opacity: 0; }
+  .anim-delay-4 { animation-delay: 0.4s; opacity: 0; }
+  .anim-delay-5 { animation-delay: 0.5s; opacity: 0; }
+  .anim-delay-6 { animation-delay: 0.6s; opacity: 0; }
+
+  /* Stepper */
+  .step-item { position: relative; }
+  .step-item::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 44px;
+    width: 2px;
+    height: calc(100% - 20px);
+    background: linear-gradient(to bottom, #2563EB, rgba(37,99,235,0.1));
+  }
+  .step-item:last-child::before { display: none; }
+
+  /* Funnel */
+  .funnel-level {
+    clip-path: polygon(5% 0%, 95% 0%, 90% 100%, 10% 100%);
+    transition: all 0.3s;
+  }
+  .funnel-level:hover { filter: brightness(1.2); transform: scaleX(1.02); }
+
+  /* Typing animation */
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .cursor { animation: blink 1s step-end infinite; }
+
+  /* Table */
+  .fin-table tr:hover td { background: rgba(37,99,235,0.08); }
+  .positive { color: #22c55e; }
+  .negative { color: #ef4444; }
+
+  /* Timeline */
+  .timeline-phase {
+    flex: 1;
+    position: relative;
+  }
+  .timeline-phase::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 20px;
+    width: 2px;
+    height: 20px;
+    background: rgba(37,99,235,0.4);
+  }
+  .timeline-phase:last-child::after { display: none; }
+
+  /* Progress bar */
+  @keyframes progressFill { from { width: 0; } to { width: var(--w); } }
+  .progress-bar { animation: progressFill 1.5s ease forwards; }
+
+  /* Special metric card */
+  .metric-highlight {
+    background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(37,99,235,0.05));
+    border: 1px solid rgba(37,99,235,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+  .metric-highlight::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent 340deg, rgba(37,99,235,0.15) 360deg);
+    animation: rotate 4s linear infinite;
+  }
+  @keyframes rotate { to { transform: rotate(360deg); } }
+
+  /* Check animation */
+  @keyframes checkDraw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+  .check-path { stroke-dasharray: 100; animation: checkDraw 0.5s ease forwards; }
+
+  /* Scrollable content areas within screens */
+  .screen-scroll { overflow-y: auto; flex: 1; }
+  .screen-scroll::-webkit-scrollbar { width: 4px; }
+  .screen-scroll::-webkit-scrollbar-track { background: transparent; }
+  .screen-scroll::-webkit-scrollbar-thumb { background: rgba(37,99,235,0.4); border-radius: 2px; }
+
+  /* Keyboard hint */
+  .kbd {
+    display: inline-block;
+    background: rgba(30,41,59,0.8);
+    border: 1px solid rgba(37,99,235,0.3);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 10px;
+    color: #64748b;
+    font-family: monospace;
+  }
+</style>
+</head>
+<body class="bg-slate-950">
+
+<!-- SVG DEFS (logo) -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#2563EB"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- ============================================================
+     SCREEN 0: INICIO
+     ============================================================ -->
+<div class="screen active grid-bg" id="screen-0">
+  <div class="flex flex-col items-center justify-center h-full relative px-8">
+    <!-- Corner info -->
+    <div class="absolute bottom-16 left-8 right-8 flex justify-between items-end">
+      <p class="text-slate-500 text-xs font-inter">
+        Presentación TFG · Alejandro Vera Suárez · Mentora: Victoria Rodriguez · Cádiz, 2026
+      </p>
+      <div class="flex gap-2 items-center">
+        <span class="kbd">←</span><span class="kbd">→</span>
+        <span class="text-slate-600 text-xs ml-1">Navegar</span>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="flex flex-col items-center gap-8 anim-up">
+      <!-- Logo SVG -->
+      <div class="pulse-glow rounded-full p-1">
+        <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Globe circle -->
+          <circle cx="55" cy="60" r="44" stroke="url(#blueGrad)" stroke-width="2.5" fill="none"/>
+          <!-- Horizontal lines -->
+          <ellipse cx="55" cy="60" rx="44" ry="18" stroke="url(#blueGrad)" stroke-width="1.8" fill="none" opacity="0.7"/>
+          <line x1="11" y1="60" x2="99" y2="60" stroke="url(#blueGrad)" stroke-width="1.8" opacity="0.7"/>
+          <line x1="15" y1="42" x2="95" y2="42" stroke="url(#blueGrad)" stroke-width="1.2" opacity="0.4"/>
+          <line x1="15" y1="78" x2="95" y2="78" stroke="url(#blueGrad)" stroke-width="1.2" opacity="0.4"/>
+          <!-- Vertical line (meridian) -->
+          <line x1="55" y1="16" x2="55" y2="104" stroke="url(#blueGrad)" stroke-width="1.8" opacity="0.5"/>
+          <!-- Arrow breaking right -->
+          <line x1="72" y1="60" x2="110" y2="60" stroke="#3B82F6" stroke-width="3" stroke-linecap="round"/>
+          <polyline points="100,50 112,60 100,70" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+          <!-- Cover arc (white fill to create "breaking out" illusion) -->
+          <path d="M 99 44 A 44 44 0 0 1 99 76" stroke="#020617" stroke-width="5" fill="none"/>
+          <path d="M 99 44 A 44 44 0 0 1 99 76" stroke="url(#blueGrad)" stroke-width="2.5" fill="none"/>
+        </svg>
+      </div>
+
+      <!-- Brand name -->
+      <div class="text-center">
+        <h1 class="font-montserrat font-black text-7xl text-white text-glow tracking-tight leading-none">
+          Sin Límites
+        </h1>
+        <p class="font-inter text-electric-glow text-lg mt-3 font-light tracking-widest uppercase">
+          Plataforma SaaS · IA para Emprendedores
+        </p>
+      </div>
+
+      <!-- CTA Button -->
+      <button onclick="goTo(1)" class="mt-4 relative group">
+        <div class="absolute inset-0 rounded-full bg-electric blur-md opacity-40 group-hover:opacity-70 transition-opacity"></div>
+        <div class="relative font-montserrat font-bold text-white bg-electric hover:bg-electric-light text-lg px-12 py-4 rounded-full border border-electric-glow transition-all tracking-wider blue-glow-sm">
+          [ Iniciar Exposición ]
+        </div>
+      </button>
+
+      <!-- Slide counter -->
+      <p class="text-slate-600 text-sm font-inter">Diapositiva 0 de 9</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 1: INTRODUCCIÓN Y JUSTIFICACIÓN
+     ============================================================ -->
+<div class="screen grid-bg" id="screen-1">
+  <div class="flex flex-col h-full px-12 py-8">
+    <!-- Header -->
+    <div class="mb-6 anim-up">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-1 h-8 bg-electric rounded-full"></div>
+        <span class="text-electric-glow font-inter text-sm font-medium tracking-widest uppercase">Sección 1 · 3 min</span>
+      </div>
+      <h2 class="font-montserrat font-black text-4xl text-white">El Problema del Ecosistema Emprendedor</h2>
+    </div>
+
+    <!-- Content grid -->
+    <div class="flex gap-8 flex-1 min-h-0">
+      <!-- LEFT: Stat Cards -->
+      <div class="flex flex-col gap-5 w-2/5 anim-left anim-delay-1">
+        <!-- Card 94% -->
+        <div class="card-dark flex-1 p-7 flex flex-col justify-between relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-electric opacity-5 rounded-full -translate-y-8 translate-x-8"></div>
+          <div>
+            <p class="text-slate-400 text-sm font-inter uppercase tracking-widest mb-3">Tasa de Fracaso Crítico</p>
+            <div class="font-montserrat font-black text-8xl text-electric text-glow" id="stat1">94%</div>
+          </div>
+          <div class="border-t border-slate-800 pt-4">
+            <p class="text-slate-300 text-sm font-inter leading-relaxed">
+              de los emprendedores fracasan por <strong class="text-white">falta de recursos y conocimiento técnico</strong>
+            </p>
+            <p class="text-slate-600 text-xs mt-2 font-inter">Fuente: Fundación Nantik Lum</p>
+          </div>
+        </div>
+
+        <!-- Card 25.7% -->
+        <div class="card-dark flex-1 p-7 flex flex-col justify-between relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500 opacity-5 rounded-full -translate-y-8 translate-x-8"></div>
+          <div>
+            <p class="text-slate-400 text-sm font-inter uppercase tracking-widest mb-3">Mortalidad Empresarial</p>
+            <div class="font-montserrat font-black text-8xl text-electric-glow text-glow" id="stat2">25.7%</div>
+          </div>
+          <div class="border-t border-slate-800 pt-4">
+            <p class="text-slate-300 text-sm font-inter leading-relaxed">
+              de las empresas <strong class="text-white">desaparecen antes del primer año</strong> de actividad
+            </p>
+            <p class="text-slate-600 text-xs mt-2 font-inter">Fuente: CEPYME</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: 3 Barriers -->
+      <div class="flex-1 flex flex-col gap-4 anim-right anim-delay-2">
+        <h3 class="font-inter font-semibold text-slate-400 uppercase tracking-widest text-xs mb-1">
+          Las 3 Barreras Estructurales
+        </h3>
+
+        <!-- Barrier 1: Economic -->
+        <div class="card-dark p-6 flex-1 flex gap-5 items-center group cursor-default">
+          <div class="w-14 h-14 rounded-xl bg-electric bg-opacity-15 flex items-center justify-center flex-shrink-0 group-hover:bg-opacity-25 transition-all">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              <path d="M9 9h1a2 2 0 0 1 0 4H9"/><path d="M12 13v3"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-3 mb-1">
+              <span class="bg-electric text-white text-xs font-bold px-2 py-0.5 rounded font-inter">01</span>
+              <h4 class="font-montserrat font-bold text-white text-lg">Barrera Económica</h4>
+            </div>
+            <p class="text-slate-400 text-sm font-inter">Coste inaccesible de consultores y servicios especializados. El asesoramiento estratégico queda reservado para grandes empresas.</p>
+          </div>
+        </div>
+
+        <!-- Barrier 2: Operative -->
+        <div class="card-dark p-6 flex-1 flex gap-5 items-center group cursor-default">
+          <div class="w-14 h-14 rounded-xl bg-electric bg-opacity-15 flex items-center justify-center flex-shrink-0 group-hover:bg-opacity-25 transition-all">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-3 mb-1">
+              <span class="bg-blue-700 text-white text-xs font-bold px-2 py-0.5 rounded font-inter">02</span>
+              <h4 class="font-montserrat font-bold text-white text-lg">Barrera Operativa</h4>
+            </div>
+            <p class="text-slate-400 text-sm font-inter">Saturación y dispersión informativa. Exceso de herramientas desconectadas que generan fricción y parálisis por análisis.</p>
+          </div>
+        </div>
+
+        <!-- Barrier 3: Psychological -->
+        <div class="card-dark p-6 flex-1 flex gap-5 items-center group cursor-default">
+          <div class="w-14 h-14 rounded-xl bg-electric bg-opacity-15 flex items-center justify-center flex-shrink-0 group-hover:bg-opacity-25 transition-all">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-3 mb-1">
+              <span class="bg-blue-900 text-blue-200 text-xs font-bold px-2 py-0.5 rounded font-inter">03</span>
+              <h4 class="font-montserrat font-bold text-white text-lg">Barrera Psicológica</h4>
+            </div>
+            <p class="text-slate-400 text-sm font-inter">Miedo al fracaso y baja autoeficacia técnica. El emprendedor novel carece de un acompañante que valide sus decisiones y reduzca la incertidumbre.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 2: MARCO TEÓRICO
+     ============================================================ -->
+<div class="screen grid-bg" id="screen-2">
+  <div class="flex flex-col h-full px-12 py-8">
+    <div class="mb-6 anim-up">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-1 h-8 bg-electric rounded-full"></div>
+        <span class="text-electric-glow font-inter text-sm font-medium tracking-widest uppercase">Sección 2 · 2 min</span>
+      </div>
+      <h2 class="font-montserrat font-black text-4xl text-white">Pilares Conceptuales y Soporte Científico</h2>
+    </div>
+
+    <div class="grid grid-cols-2 gap-5 flex-1">
+      <!-- Pilar 1 -->
+      <div class="card-dark p-7 flex flex-col gap-4 cursor-pointer anim-up anim-delay-1" onclick="togglePilar(this)">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-electric bg-opacity-20 flex items-center justify-center flex-shrink-0">
+            <span class="font-montserrat font-black text-electric text-xl">01</span>
+          </div>
+          <div>
+            <h3 class="font-montserrat font-bold text-white text-xl mb-1">Ecosistema Emprendedor</h3>
+            <p class="text-electric-glow text-xs font-inter uppercase tracking-wider">Validación Temprana</p>
+          </div>
+        </div>
+        <p class="text-slate-400 text-sm font-inter leading-relaxed">
+          <strong class="text-slate-200">Shane & Venkataraman</strong> — Oportunidades y creación de valor sistémico.<br>
+          <strong class="text-slate-200">Lean Startup (Ries)</strong> — Ciclo Build-Measure-Learn. Reducción del riesgo mediante iteración rápida y validación de hipótesis antes de escalar.
+        </p>
+        <div class="mt-auto pt-3 border-t border-slate-800">
+          <span class="text-xs text-slate-500 font-inter italic">Hover / Click para iluminar</span>
+        </div>
+      </div>
+
+      <!-- Pilar 2 -->
+      <div class="card-dark p-7 flex flex-col gap-4 cursor-pointer anim-up anim-delay-2" onclick="togglePilar(this)">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-electric bg-opacity-20 flex items-center justify-center flex-shrink-0">
+            <span class="font-montserrat font-black text-electric text-xl">02</span>
+          </div>
+          <div>
+            <h3 class="font-montserrat font-bold text-white text-xl mb-1">Economía de Plataformas</h3>
+            <p class="text-electric-glow text-xs font-inter uppercase tracking-wider">Centralización · Reducción de Fricción</p>
+          </div>
+        </div>
+        <p class="text-slate-400 text-sm font-inter leading-relaxed">
+          <strong class="text-slate-200">Parker, Van Alstyne & Choudary</strong> — Plataformas como orquestadoras de valor entre múltiples actores.<br>
+          <strong class="text-slate-200">Tiwana</strong> — Arquitectura de plataforma modular. Centralización de servicios dispersos en un único punto de acceso.
+        </p>
+        <div class="mt-auto pt-3 border-t border-slate-800">
+          <span class="text-xs text-slate-500 font-inter italic">Hover / Click para iluminar</span>
+        </div>
+      </div>
+
+      <!-- Pilar 3 -->
+      <div class="card-dark p-7 flex flex-col gap-4 cursor-pointer anim-up anim-delay-3" onclick="togglePilar(this)">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-electric bg-opacity-20 flex items-center justify-center flex-shrink-0">
+            <span class="font-montserrat font-black text-electric text-xl">03</span>
+          </div>
+          <div>
+            <h3 class="font-montserrat font-bold text-white text-xl mb-1">IA Generativa</h3>
+            <p class="text-electric-glow text-xs font-inter uppercase tracking-wider">+34% Productividad</p>
+          </div>
+        </div>
+        <p class="text-slate-400 text-sm font-inter leading-relaxed">
+          <strong class="text-slate-200">NBER — Brynjolfsson, Li & Raymond</strong> — La IA generativa incrementa la productividad un <strong class="text-electric-glow text-base">+34%</strong> en perfiles no experimentados. El mayor impacto se produce precisamente en quienes parten de menor base de conocimiento técnico.
+        </p>
+        <div class="mt-auto pt-3 border-t border-slate-800">
+          <span class="text-xs text-slate-500 font-inter italic">Hover / Click para iluminar</span>
+        </div>
+      </div>
+
+      <!-- Pilar 4 -->
+      <div class="card-dark p-7 flex flex-col gap-4 cursor-pointer anim-up anim-delay-4" onclick="togglePilar(this)">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-electric bg-opacity-20 flex items-center justify-center flex-shrink-0">
+            <span class="font-montserrat font-black text-electric text-xl">04</span>
+          </div>
+          <div>
+            <h3 class="font-montserrat font-bold text-white text-xl mb-1">Modelo Freemium</h3>
+            <p class="text-electric-glow text-xs font-inter uppercase tracking-wider">Democratización del Acceso</p>
+          </div>
+        </div>
+        <p class="text-slate-400 text-sm font-inter leading-relaxed">
+          <strong class="text-slate-200">Anderson & Seufert</strong> — El freemium elimina la barrera de entrada económica. Permite democratizar el acceso tecnológico generando valor real antes de solicitar conversión a plan de pago.
+        </p>
+        <div class="mt-auto pt-3 border-t border-slate-800">
+          <span class="text-xs text-slate-500 font-inter italic">Hover / Click para iluminar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 3: ARQUITECTURA FUNCIONAL
+     ============================================================ -->
+<div class="screen grid-bg" id="screen-3">
+  <div class="flex flex-col h-full px-12 py-8">
+    <div class="mb-5 anim-up">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-1 h-8 bg-electric rounded-full"></div>
+        <span class="text-electric-glow font-inter text-sm font-medium tracking-widest uppercase">Sección 3 · 3 min</span>
+      </div>
+      <h2 class="font-montserrat font-black text-4xl text-white">Arquitectura Funcional de Sin Límites</h2>
+    </div>
+
+    <div class="flex gap-8 flex-1 min-h-0">
+      <!-- LEFT: Identity -->
+      <div class="w-2/5 flex flex-col gap-5 anim-left anim-delay-1">
+        <div class="card-dark p-6">
+          <p class="text-electric-glow text-xs font-inter uppercase tracking-widest mb-4">Identidad Corporativa</p>
+          <!-- Logo -->
+          <div class="flex items-center gap-4 mb-6">
+            <svg width="64" height="64" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="55" cy="60" r="44" stroke="url(#blueGrad)" stroke-width="2.5" fill="none"/>
+              <ellipse cx="55" cy="60" rx="44" ry="18" stroke="url(#blueGrad)" stroke-width="1.8" fill="none" opacity="0.7"/>
+              <line x1="11" y1="60" x2="99" y2="60" stroke="url(#blueGrad)" stroke-width="1.8" opacity="0.7"/>
+              <line x1="15" y1="42" x2="95" y2="42" stroke="url(#blueGrad)" stroke-width="1.2" opacity="0.4"/>
+              <line x1="15" y1="78" x2="95" y2="78" stroke="url(#blueGrad)" stroke-width="1.2" opacity="0.4"/>
+              <line x1="55" y1="16" x2="55" y2="104" stroke="url(#blueGrad)" stroke-width="1.8" opacity="0.5"/>
+              <line x1="72" y1="60" x2="110" y2="60" stroke="#3B82F6" stroke-width="3" stroke-linecap="round"/>
+              <polyline points="100,50 112,60 100,70" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+              <path d="M 99 44 A 44 44 0 0 1 99 76" stroke="#020617" stroke-width="5" fill="none"/>
+              <path d="M 99 44 A 44 44 0 0 1 99 76" stroke="url(#blueGrad)" stroke-width="2.5" fill="none"/>
+            </svg>
+            <div>
+              <div class="font-montserrat font-black text-3xl text-white">Sin Límites</div>
+              <div class="text-slate-500 text-xs font-inter mt-1">SaaS · IA · España</div>
+            </div>
+          </div>
+
+          <!-- Palette -->
+          <p class="text-slate-500 text-xs font-inter uppercase tracking-widest mb-3">Paleta Cromática</p>
+          <div class="flex gap-2 mb-4">
+            <div class="flex-1 h-10 rounded-lg bg-electric flex items-end p-1"><span class="text-white text-xs font-mono">#2563EB</span></div>
+            <div class="flex-1 h-10 rounded-lg bg-blue-400 flex items-end p-1"><span class="text-slate-900 text-xs font-mono">#60A5FA</span></div>
+            <div class="flex-1 h-10 rounded-lg bg-slate-900 border border-slate-700 flex items-end p-1"><span class="text-slate-400 text-xs font-mono">#0F172A</span></div>
+            <div class="flex-1 h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-end p-1"><span class="text-slate-400 text-xs font-mono">#1E293B</span></div>
+          </div>
+
+          <!-- Fonts -->
+          <p class="text-slate-500 text-xs font-inter uppercase tracking-widest mb-3">Tipografías</p>
+          <div class="flex gap-3">
+            <div class="flex-1 bg-slate-900 border border-slate-800 rounded-lg p-3">
+              <p class="font-montserrat font-bold text-white text-lg leading-none">Montserrat</p>
+              <p class="text-slate-500 text-xs mt-1 font-inter">Títulos · Display</p>
+            </div>
+            <div class="flex-1 bg-slate-900 border border-slate-800 rounded-lg p-3">
+              <p class="font-inter font-medium text-white text-lg leading-none">Inter</p>
+              <p class="text-slate-500 text-xs mt-1 font-inter">Cuerpo · UI</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tech Stack -->
+        <div class="card-dark p-5 flex-1">
+          <p class="text-electric-glow text-xs font-inter uppercase tracking-widest mb-3">Stack Tecnológico</p>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-slate-900 rounded-lg p-2 text-center"><p class="text-white text-xs font-inter font-medium">Gemini 3 Pro</p><p class="text-slate-500 text-xs">IA Core</p></div>
+            <div class="bg-slate-900 rounded-lg p-2 text-center"><p class="text-white text-xs font-inter font-medium">React / Next.js</p><p class="text-slate-500 text-xs">Frontend</p></div>
+            <div class="bg-slate-900 rounded-lg p-2 text-center"><p class="text-white text-xs font-inter font-medium">Node.js</p><p class="text-slate-500 text-xs">Backend API</p></div>
+            <div class="bg-slate-900 rounded-lg p-2 text-center"><p class="text-white text-xs font-inter font-medium">GCP / Firebase</p><p class="text-slate-500 text-xs">Cloud Infra</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: 4 Modules Stepper -->
+      <div class="flex-1 flex flex-col justify-center gap-0 anim-right anim-delay-2">
+        <p class="text-slate-500 text-xs font-inter uppercase tracking-widest mb-4">Flujo de 4 Módulos Secuenciales</p>
+
+        <div class="step-item pb-4 flex gap-4">
+          <div class="w-10 h-10 rounded-full bg-electric flex items-center justify-center flex-shrink-0 blue-glow-sm">
+            <span class="text-white font-bold text-sm font-inter">01</span>
+          </div>
+          <div class="card-dark p-4 flex-1">
+            <h4 class="font-montserrat font-bold text-white text-lg">Validación de Ideas</h4>
+            <p class="text-slate-400 text-sm font-inter mt-1">Generación automática de <strong class="text-electric-glow">Buyer Persona</strong> detallado y mapa de <strong class="text-electric-glow">Propuesta de Valor</strong>. La IA analiza el mercado y devuelve datos accionables en segundos.</p>
+          </div>
+        </div>
+
+        <div class="step-item pb-4 flex gap-4">
+          <div class="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center flex-shrink-0">
+            <span class="text-white font-bold text-sm font-inter">02</span>
+          </div>
+          <div class="card-dark p-4 flex-1">
+            <h4 class="font-montserrat font-bold text-white text-lg">Branding e Identidad</h4>
+            <p class="text-slate-400 text-sm font-inter mt-1">Propuestas de <strong class="text-electric-glow">Naming</strong>, generación de paleta cromática coherente y definición del <strong class="text-electric-glow">Tono de Voz</strong> basado en el perfil de cliente ideal.</p>
+          </div>
+        </div>
+
+        <div class="step-item pb-4 flex gap-4">
+          <div class="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center flex-shrink-0">
+            <span class="text-white font-bold text-sm font-inter">03</span>
+          </div>
+          <div class="card-dark p-4 flex-1">
+            <h4 class="font-montserrat font-bold text-white text-lg">Presencia Digital</h4>
+            <p class="text-slate-400 text-sm font-inter mt-1"><strong class="text-electric-glow">Landing page MVP</strong> automatizada lista para publicar y copywriting estratégico optimizado para conversión y SEO desde el primer día.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="w-10 h-10 rounded-full bg-slate-700 border border-electric flex items-center justify-center flex-shrink-0">
+            <span class="text-electric font-bold text-sm font-inter">04</span>
+          </div>
+          <div class="card-dark p-4 flex-1">
+            <h4 class="font-montserrat font-bold text-white text-lg">Comunidad y Acompañamiento</h4>
+            <p class="text-slate-400 text-sm font-inter mt-1"><strong class="text-electric-glow">Red segura</strong> de emprendedores con moderación inteligente de IA. Soporte continuo, recursos curados y mentoría asistida por IA.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 4: LIVE DEMO
+     ============================================================ -->
+<div class="screen grid-bg" id="screen-4">
+  <div class="flex flex-col h-full px-12 py-8">
+    <div class="mb-5 anim-up">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-1 h-8 bg-electric rounded-full"></div>
+        <span class="text-electric-glow font-inter text-sm font-medium tracking-widest uppercase">Demo Interactiva · 1 min</span>
+      </div>
+      <h2 class="font-montserrat font-black text-4xl text-white">Interactive Preview: Sin Límites en Acción</h2>
+    </div>
+
+    <!-- Mockup shell -->
+    <div class="flex-1 card-dark flex flex-col overflow-hidden anim-up anim-delay-1">
+      <!-- App bar -->
+      <div class="flex items-center gap-3 px-5 py-3 border-b border-slate-800 bg-slate-950 bg-opacity-60">
+        <div class="flex gap-1.5"><div class="w-3 h-3 rounded-full bg-red-500 opacity-70"></div><div class="w-3 h-3 rounded-full bg-yellow-500 opacity-70"></div><div class="w-3 h-3 rounded-full bg-green-500 opacity-70"></div></div>
+        <div class="flex-1 bg-slate-900 border border-slate-800 rounded-md px-3 py-1 text-slate-500 text-xs font-mono text-center">app.sinlimites.es/validar</div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+
+      <!-- Content area -->
+      <div class="flex gap-6 p-6 flex-1 min-h-0">
+        <!-- Input panel -->
+        <div class="w-80 flex flex-col gap-4 flex-shrink-0">
+          <div>
+            <label class="text-slate-400 text-xs font-inter uppercase tracking-wider block mb-2">Tu Idea de Negocio</label>
+            <textarea id="demoInput" placeholder="Ej: App de entrenamiento para mayores de 60 años..." class="w-full bg-slate-900 border border-slate-700 focus:border-electric rounded-xl p-3 text-white text-sm font-inter resize-none h-28 outline-none transition-colors placeholder-slate-600"></textarea>
+          </div>
+          <button onclick="runDemo()" id="demoBtn" class="w-full bg-electric hover:bg-blue-500 text-white font-montserrat font-bold py-3 px-6 rounded-xl transition-all blue-glow-sm text-sm tracking-wider">
+            [ Ejecutar Validación con IA ]
+          </button>
+          <div id="demoStatus" class="hidden text-center">
+            <div class="flex items-center justify-center gap-2 text-electric-glow text-sm font-inter">
+              <svg class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              <span>Pensando...</span>
+            </div>
+          </div>
+          <!-- Quick examples -->
+          <div class="mt-2">
+            <p class="text-slate-600 text-xs font-inter mb-2">Ideas de ejemplo:</p>
+            <div class="flex flex-col gap-1">
+              <button onclick="setDemo('App de entrenamiento para mayores de 60 años')" class="text-left text-xs text-slate-500 hover:text-electric-glow font-inter transition-colors py-1 px-2 rounded bg-slate-900 hover:bg-slate-800">→ App fitness para mayores</button>
+              <button onclick="setDemo('Plataforma de clases de idiomas con IA para niños')" class="text-left text-xs text-slate-500 hover:text-electric-glow font-inter transition-colors py-1 px-2 rounded bg-slate-900 hover:bg-slate-800">→ Idiomas con IA para niños</button>
+              <button onclick="setDemo('Servicio de catering saludable a domicilio en ciudades medias')" class="text-left text-xs text-slate-500 hover:text-electric-glow font-inter transition-colors py-1 px-2 rounded bg-slate-900 hover:bg-slate-800">→ Catering saludable a domicilio</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results panel -->
+        <div class="flex-1 flex flex-col" id="demoResults" style="display:none!important">
+          <!-- Tabs -->
+          <div class="flex gap-1 mb-4 border-b border-slate-800 pb-0">
+            <button onclick="showTab(0)" id="tab0" class="tab-btn active px-4 py-2 text-sm font-inter font-medium text-electric border-b-2 border-electric -mb-px">👤 Buyer Persona Ideal</button>
+            <button onclick="showTab(1)" id="tab1" class="tab-btn px-4 py-2 text-sm font-inter font-medium text-slate-500 hover:text-slate-300 -mb-px border-b-2 border-transparent transition-colors">💡 Propuesta de Valor</button>
+            <button onclick="showTab(2)" id="tab2" class="tab-btn px-4 py-2 text-sm font-inter font-medium text-slate-500 hover:text-slate-300 -mb-px border-b-2 border-transparent transition-colors">🎨 Identidad Visual Básica</button>
+          </div>
+          <!-- Tab content -->
+          <div id="tabContent" class="flex-1 overflow-y-auto pr-2"></div>
+        </div>
+
+        <!-- Placeholder -->
+        <div class="flex-1 flex flex-col items-center justify-center text-center" id="demoPlaceholder">
+          <div class="w-20 h-20 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center mb-4 opacity-40">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.5"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 2a10 10 0 0 1 10 10"/><path d="M2 12h10V2"/></svg>
+          </div>
+          <p class="text-slate-600 font-inter text-sm">Los resultados aparecerán aquí<br>tras ejecutar la validación</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 5: MARKETING Y FUNNEL
+     ============================================================ -->
+<div class="screen grid-bg" id="screen-5">
+  <div class="flex flex-col h-full px-12 py-8">
+    <div class="mb-5 anim-up">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-1 h-8 bg-electric rounded-full"></div>
+        <span class="text-electric-glow font-inter text-sm font-medium tracking-widest uppercase">Sección 3.3 · 1.5 min</span>
+      </div>
+      <h2 class="font-montserrat font-black text-4xl text-white">Estrategia de Crecimiento Go-To-Market</h2>
+    </div>
+
+    <div class="flex gap-8 flex-1 min-h-0">
+      <!-- Funnel -->
+      <div class="flex-1 flex flex-col items-center justify-center gap-2 anim-left anim-delay-1">
+        <p class="text-slate-500 text-xs font-inter uppercase tracking-widest mb-3">Embudo de Conversión</p>
+
+        <div class="w-full max-w-lg">
+          <!-- Level 1: Atracción -->
+          <div class="funnel-level mb-1 py-5 px-8 text-center cursor-pointer group" style="background: linear-gradient(135deg, #1d4ed8, #2563eb); width:100%">
+            <div class="flex items-center justify-between">
+              <span class="font-montserrat font-bold text-white text-sm uppercase tracking-wider">ATRACCIÓN</span>
+              <span class="text-blue-200 text-xs font-inter group-hover:text-white transition-colors">TikTok · Reels · Shorts</span>
+            </div>
+          </div>
+
+          <!-- Level 2: Interacción -->
+          <div class="funnel-level mb-1 py-5 px-8 text-center cursor-pointer group mx-auto" style="background: linear-gradient(135deg, #1e40af, #1d4ed8); width:88%">
+            <div class="flex items-center justify-between">
+              <span class="font-montserrat font-bold text-white text-sm uppercase tracking-wider">INTERACCIÓN</span>
+              <span class="text-blue-200 text-xs font-inter group-hover:text-white transition-colors">Universidades · Aceleradoras</span>
+            </div>
+          </div>
+
+          <!-- Level 3: Conversión -->
+          <div class="funnel-level mb-1 py-5 px-8 text-center cursor-pointer group mx-auto" style="background: linear-gradient(135deg, #1e3a8a, #1e40af); width:74%">
+            <div class="flex items-center justify-between">
+              <span class="font-montserrat font-bold text-white text-sm uppercase tracking-wider">CONVERSIÓN</span>
+              <span class="text-blue-200 text-xs font-inter group-hover:text-white transition-colors">Exportación · Premium</span>
+            </div>
+          </div>
+
+          <!-- Level 4: Fidelización -->
+          <div class="funnel-level py-5 px-8 text-center cursor-pointer group mx-auto" style="background: linear-gradient(135deg, #172554, #1e3a8a); width:58%">
+            <div class="flex items-center justify-between">
+              <span class="font-montserrat font-bold text-white text-sm uppercase tracking-wider">FIDELIZACIÓN</span>
+              <span class="text-blue-200 text-xs font-inter group-hover:text-white transition-colors">Comunidad · Soporte</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="w-72 flex flex-col gap-4 anim-right anim-delay-2">
+        <p class="text-slate-500 text-xs font-inter uppercase tracking-widest">KPIs Clave</p>
+
+        <div class="card-dark p-5 flex-1 flex flex-col justify-between">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="text-slate-500 text-xs font-inter uppercase tracking-wider">CAC</p>
+              <p class="font-montserrat font-black text-3xl text-white mt-1">12€</p>
+              <p class="text-slate-400 text-xs font-inter mt-1">Coste de Adquisición</p>
+            </div>
+            <div class="w-10 h-10 bg-electric bg-opacity-15 rounded-xl flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+          </div>
+          <div class="w-full bg-slate-900 rounded-full h-1.5 mt-2"><div class="bg-electric h-1.5 rounded-full progress-bar" style="--w: 35%"></div></div>
+        </div>
+
+        <div class="card-dark p-5 flex-1 flex flex-col justify-between">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="text-slate-500 text-xs font-inter uppercase tracking-wider">Tasa Conversión</p>
+              <p class="font-montserrat font-black text-3xl text-white mt-1">3.5%</p>
+              <p class="text-slate-400 text-xs font-inter mt-1">Free → Premium</p>
+            </div>
+            <div class="w-10 h-10 bg-electric bg-opacity-15 rounded-xl flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+          </div>
+          <div class="w-full bg-slate-900 rounded-full h-1.5 mt-2"><div class="bg-electric h-1.5 rounded-full progress-bar" style="--w: 55%"></div></div>
+        </div>
+
+        <div class="card-dark p-5 flex-1 flex flex-col justify-between">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="text-slate-500 text-xs font-inter uppercase tracking-wider">Retención Mensual</p>
+              <p class="font-montserrat font-black text-3xl text-white mt-1">82%</p>
+              <p class="text-slate-400 text-xs font-inter mt-1">MRR Retention</p>
+            </div>
+            <div class="w-10 h-10 bg-electric bg-opacity-15 rounded-xl flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+            </div>
+          </div>
+          <div class="w-full bg-slate-900 rounded-full h-1.5 mt-2"><div class="bg-electric h-1.5 rounded-full progress-bar" style="--w: 82%"></div></div>
+        </div>
+
+        <div class="card-dark p-5 flex-1 flex flex-col justify-between">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="text-slate-500 text-xs font-inter uppercase tracking-wider">LTV</p>
+              <p class="font-montserrat font-black text-3xl text-white mt-1">240€</p>
+              <p class="text-slate-400 text-xs font-inter mt-1">Lifetime Value / usuario</p>
+            </div>
+            <div class="w-10 h-10 bg-electric bg-opacity-15 rounded-xl flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+          </div>
+          <div class="w-full bg-slate-900 rounded-full h-1.5 mt-2"><div class="bg-electric h-1.5 rounded-full progress-bar" style="--w: 70%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 6: VIABILIDAD ECONÓMICA
+     ============================================================ -->
+<div class="screen grid-bg" id="screen-6">
+  <div class="flex flex-col h-full px-12 py-8">
+    <div class="mb-5 anim-up">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-1 h-8 bg-electric rounded-full"></div>
+        <span class="text-electric-glow font-inter text-sm font-medium tracking-widest uppercase">Sección 3.5 · 2 min</span>
+      </div>
+      <h2 class="font-montserrat font-black text-4xl text-white">Proyección Financiera a 3 Años</h2>
+    </div>
+
+    <div class="flex gap-8 flex-1 min-h-0">
+      <!-- Col A: Investment -->
+      <div class="w-2/5 flex flex-col gap-4 anim-left anim-delay-1">
+        <div class="card-dark p-6 flex-1">
+          <div class="text-center mb-5 pb-5 border-b border-slate-800">
+            <p class="text-slate-400 text-xs font-inter uppercase tracking-widest mb-1">Inversión Inicial Total</p>
+            <div class="font-montserrat font-black text-5xl text-white text-glow">137.500 €</div>
+          </div>
+
+          <p class="text-slate-500 text-xs font-inter uppercase tracking-widest mb-3">Desglose de Partidas</p>
+          <div class="flex flex-col gap-2 mb-5">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-300 text-sm font-inter">Recursos Humanos</span>
+              <div class="flex items-center gap-3">
+                <div class="w-24 bg-slate-900 rounded-full h-1.5"><div class="bg-electric h-1.5 rounded-full" style="width:65%"></div></div>
+                <span class="text-white font-montserrat font-bold text-sm w-12 text-right">90.000€</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-300 text-sm font-inter">Infraestructura Cloud</span>
+              <div class="flex items-center gap-3">
+                <div class="w-24 bg-slate-900 rounded-full h-1.5"><div class="bg-blue-500 h-1.5 rounded-full" style="width:11%"></div></div>
+                <span class="text-white font-montserrat font-bold text-sm w-12 text-right">12.000€</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-300 text-sm font-inter">API Tokens (Gemini)</span>
+              <div class="flex items-center gap-3">
+                <div class="w-24 bg-slate-900 rounded-full h-1.5"><div class="bg-blue-400 h-1.5 rounded-full" style="width:4%"></div></div>
+                <span class="text-white font-montserrat font-bold text-sm w-12 text-right">5.000€</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-300 text-sm font-inter">Marketing y Captación</span>
+              <div class="flex items-center gap-3">
+                <div class="w-24 bg-slate-900 rounded-full h-1.5"><div class="bg-electric h-1.5 rounded-full" style="width:11%"></div></div>
+                <span class="text-white font-montserrat font-bold text-sm w-12 text-right">15.000€</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-300 text-sm font-inter">Legal y Compliance</span>
+              <div class="flex items-center gap-3">
+                <div class="w-24 bg-slate-900 rounded-full h-1.5"><div class="bg-blue-700 h-1.5 rounded-full" style="width:2%"></div></div>
+                <span class="text-white font-montserrat font-bold text-sm w-12 text-right">3.000€</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-300 text-sm font-inter">Fondo de Maniobra</span>
+              <div class="flex items-center gap-3">
+                <div class="w-24 bg-slate-900 rounded-full h-1.5"><div class="bg-slate-500 h-1.5 rounded-full" style="width:9%"></div></div>
+                <span class="text-white font-montserrat font-bold text-sm w-12 text-right">12.500€</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-slate-500 text-xs font-inter uppercase tracking-widest mb-3">Estructura de Financiación</p>
+          <div class="flex gap-2">
+            <div class="flex-1 bg-slate-900 rounded-xl p-3 text-center border border-slate-800">
+              <div class="font-montserrat font-black text-xl text-white">15%</div>
+              <div class="text-slate-500 text-xs font-inter mt-1">Promotores</div>
+              <div class="text-slate-600 text-xs font-inter">20.625€</div>
+            </div>
+            <div class="flex-1 bg-electric bg-opacity-10 border border-electric border-opacity-30 rounded-xl p-3 text-center">
+              <div class="font-montserrat font-black text-xl text-electric">40%</div>
+              <div class="text-slate-300 text-xs font-inter mt-1">ENISA Jóvenes</div>
+              <div class="text-slate-500 text-xs font-inter">55.000€</div>
+            </div>
+            <div class="flex-1 bg-slate-900 rounded-xl p-3 text-center border border-slate-800">
+              <div class="font-montserrat font-black text-xl text-white">45%</div>
+              <div class="text-slate-500 text-xs font-inter mt-1">Pre-Seed</div>
+              <div class="text-slate-600 text-xs font-inter">61.875€</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Col B: Financial Table -->
+      <div class="flex-1 flex flex-col gap-4 anim-right anim-delay-2">
+        <div class="card-dark p-6 flex-1">
+          <p class="text-slate-500 text-xs font-inter uppercase tracking-widest mb-5">Evolución Financiera Proyectada</p>
+          <table class="w-full fin-table">
+            <thead>
+              <tr class="border-b border-slate-800">
+                <th class="text-slate-500 text-xs font-inter text-left py-2 font-medium uppercase tracking-wider">Período</th>
+                <th class="text-slate-500 text-xs font-inter text-right py-2 font-medium uppercase tracking-wider">Usuarios</th>
+                <th class="text-slate-500 text-xs font-inter text-right py-2 font-medium uppercase tracking-wider">Premium</th>
+                <th class="text-slate-500 text-xs font-inter text-right py-2 font-medium uppercase tracking-wider">Ingresos</th>
+                <th class="text-slate-500 text-xs font-inter text-right py-2 font-medium uppercase tracking-wider">Costes</th>
+                <th class="text-slate-500 text-xs font-inter text-right py-2 font-medium uppercase tracking-wider">Resultado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-slate-900 transition-colors">
+                <td class="py-5 pr-2">
+                  <div class="font-montserrat font-bold text-white text-lg">Año 1</div>
+                  <div class="text-slate-600 text-xs font-inter">Penetración</div>
+                </td>
+                <td class="text-right py-5 font-inter text-slate-300 font-medium">10.000</td>
+                <td class="text-right py-5 font-inter text-slate-300 font-medium">300</td>
+                <td class="text-right py-5 font-inter text-slate-200 font-bold">72.000€</td>
+                <td class="text-right py-5 font-inter text-slate-400">140.000€</td>
+                <td class="text-right py-5">
+                  <span class="negative font-montserrat font-bold text-lg">-68.000€</span>
+                </td>
+              </tr>
+              <tr class="border-b border-slate-900 transition-colors">
+                <td class="py-5 pr-2">
+                  <div class="font-montserrat font-bold text-white text-lg">Año 2</div>
+                  <div class="text-electric-glow text-xs font-inter">⚡ Punto de Equilibrio</div>
+                </td>
+                <td class="text-right py-5 font-inter text-slate-300 font-medium">50.000</td>
+                <td class="text-right py-5 font-inter text-slate-300 font-medium">1.750</td>
+                <td class="text-right py-5 font-inter text-slate-200 font-bold">420.000€</td>
+                <td class="text-right py-5 font-inter text-slate-400">250.000€</td>
+                <td class="text-right py-5">
+                  <span class="positive font-montserrat font-bold text-lg">+170.000€</span>
+                </td>
+              </tr>
+              <tr class="transition-colors">
+                <td class="py-5 pr-2">
+                  <div class="font-montserrat font-bold text-white text-lg">Año 3</div>
+                  <div class="text-green-400 text-xs font-inter">Escala</div>
+                </td>
+                <td class="text-right py-5 font-inter text-slate-300 font-medium">150.000</td>
+                <td class="text-right py-5 font-inter text-slate-300 font-medium">6.000</td>
+                <td class="text-right py-5 font-inter text-slate-200 font-bold">1.440.000€</td>
+                <td class="text-right py-5 font-inter text-slate-400">600.000€</td>
+                <td class="text-right py-5">
+                  <span class="positive font-montserrat font-bold text-2xl">+840.000€</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Visual bar chart -->
+          <div class="mt-5 pt-5 border-t border-slate-800">
+            <p class="text-slate-600 text-xs font-inter uppercase tracking-wider mb-3">Evolución de Ingresos</p>
+            <div class="flex items-end gap-4 h-16">
+              <div class="flex flex-col items-center gap-1 flex-1">
+                <div class="w-full bg-red-900 bg-opacity-40 border border-red-900 rounded-t-md" style="height:8%"></div>
+                <span class="text-slate-600 text-xs font-inter">A1</span>
+              </div>
+              <div class="flex flex-col items-center gap-1 flex-1">
+                <div class="w-full bg-electric bg-opacity-50 border border-electric border-opacity-40 rounded-t-md" style="height:30%"></div>
+                <span class="text-slate-500 text-xs font-inter">A2</span>
+              </div>
+              <div class="flex flex-col items-center gap-1 flex-1">
+                <div class="w-full bg-electric rounded-t-md" style="height:100%"></div>
+                <span class="text-electric-glow text-xs font-inter font-bold">A3</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 7: PLANIFICACIÓN Y RIESGOS
+     ============================================================ -->
+<div class="screen grid-bg" id="screen-7">
+  <div class="flex flex-col h-full px-12 py-8">
+    <div class="mb-5 anim-up">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-1 h-8 bg-electric rounded-full"></div>
+        <span class="text-electric-glow font-inter text-sm font-medium tracking-widest uppercase">Sección 4 · 2 min</span>
+      </div>
+      <h2 class="font-montserrat font-black text-4xl text-white">Hoja de Ruta Operativa y Plan de Contingencia</h2>
+    </div>
+
+    <!-- Timeline -->
+    <div class="card-dark p-6 mb-5 anim-up anim-delay-1">
+      <p class="text-slate-500 text-xs font-inter uppercase tracking-widest mb-4">Cronograma Lean Startup — 6 Fases</p>
+      <div class="flex gap-1">
+        <div class="timeline-phase text-center pr-2">
+          <div class="w-full bg-electric rounded-lg py-2 px-2 mb-2">
+            <span class="text-white font-montserrat font-bold text-xs">F1</span>
+          </div>
+          <p class="font-inter font-semibold text-white text-xs">Investigación</p>
+          <p class="text-slate-500 text-xs font-inter mt-0.5">1 mes</p>
+          <p class="text-slate-600 text-xs font-inter mt-1 leading-tight">Research · Entrevistas · Benchmark</p>
+        </div>
+        <div class="text-electric opacity-40 self-center pb-8 text-xl flex-shrink-0">›</div>
+        <div class="timeline-phase text-center px-2">
+          <div class="w-full bg-blue-700 rounded-lg py-2 px-2 mb-2">
+            <span class="text-white font-montserrat font-bold text-xs">F2</span>
+          </div>
+          <p class="font-inter font-semibold text-white text-xs">Arquitectura</p>
+          <p class="text-slate-500 text-xs font-inter mt-0.5">1 mes</p>
+          <p class="text-slate-600 text-xs font-inter mt-1 leading-tight">Diseño técnico · Wireframes</p>
+        </div>
+        <div class="text-electric opacity-40 self-center pb-8 text-xl flex-shrink-0">›</div>
+        <div class="timeline-phase text-center px-2">
+          <div class="w-full bg-blue-800 rounded-lg py-2 px-2 mb-2">
+            <span class="text-white font-montserrat font-bold text-xs">F3</span>
+          </div>
+          <p class="font-inter font-semibold text-white text-xs">MVP</p>
+          <p class="text-slate-500 text-xs font-inter mt-0.5">2 meses</p>
+          <p class="text-slate-600 text-xs font-inter mt-1 leading-tight">Desarrollo · Integración IA</p>
+        </div>
+        <div class="text-electric opacity-40 self-center pb-8 text-xl flex-shrink-0">›</div>
+        <div class="timeline-phase text-center px-2">
+          <div class="w-full bg-blue-900 rounded-lg py-2 px-2 mb-2">
+            <span class="text-white font-montserrat font-bold text-xs">F4</span>
+          </div>
+          <p class="font-inter font-semibold text-white text-xs">Pruebas</p>
+          <p class="text-slate-500 text-xs font-inter mt-0.5">1 mes</p>
+          <p class="text-slate-600 text-xs font-inter mt-1 leading-tight">Beta · QA · Feedback</p>
+        </div>
+        <div class="text-electric opacity-40 self-center pb-8 text-xl flex-shrink-0">›</div>
+        <div class="timeline-phase text-center px-2">
+          <div class="w-full bg-electric bg-opacity-30 border border-electric rounded-lg py-2 px-2 mb-2">
+            <span class="text-electric-glow font-montserrat font-bold text-xs">F5</span>
+          </div>
+          <p class="font-inter font-semibold text-white text-xs">Lanzamiento</p>
+          <p class="text-electric-glow text-xs font-inter mt-0.5">2 semanas</p>
+          <p class="text-slate-600 text-xs font-inter mt-1 leading-tight">Go-Live · PR · Campañas</p>
+        </div>
+        <div class="text-electric opacity-40 self-center pb-8 text-xl flex-shrink-0">›</div>
+        <div class="timeline-phase text-center pl-2">
+          <div class="w-full bg-slate-800 border border-slate-600 rounded-lg py-2 px-2 mb-2">
+            <span class="text-slate-300 font-montserrat font-bold text-xs">F6</span>
+          </div>
+          <p class="font-inter font-semibold text-white text-xs">Mejora Continua</p>
+          <p class="text-slate-500 text-xs font-inter mt-0.5">Ongoing</p>
+          <p class="text-slate-600 text-xs font-inter mt-1 leading-tight">Iteración · Escala</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Risk Matrix -->
+    <div class="flex-1 anim-up anim-delay-2">
+      <p class="text-slate-500 text-xs font-inter uppercase tracking-widest mb-4">Matriz de Prevención de Riesgos</p>
+      <div class="grid grid-cols-3 gap-4 h-5/6">
+        <!-- Risk 1: Technological -->
+        <div class="card-dark p-5 flex flex-col group cursor-default">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-red-500 bg-opacity-15 flex items-center justify-center flex-shrink-0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div>
+              <p class="text-slate-500 text-xs font-inter uppercase tracking-wider">Riesgo Tecnológico</p>
+              <div class="flex items-center gap-1 mt-0.5"><div class="w-2 h-2 rounded-full bg-yellow-500"></div><span class="text-yellow-400 text-xs font-inter">Medio</span></div>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm font-inter leading-relaxed mb-3">Dependencia de API externa (Gemini) y posibles cambios en precios o disponibilidad del modelo.</p>
+          <div class="mt-auto">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="w-5 h-5 rounded-full bg-electric bg-opacity-20 flex items-center justify-center flex-shrink-0">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <span class="text-electric-glow text-xs font-inter font-medium">Mitigación</span>
+            </div>
+            <p class="text-slate-400 text-sm font-inter">Arquitectura modular con capa de abstracción API. Proveedor alternativo en standby. Multi-modelo ready.</p>
+          </div>
+        </div>
+
+        <!-- Risk 2: Commercial -->
+        <div class="card-dark p-5 flex flex-col group cursor-default">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-orange-500 bg-opacity-15 flex items-center justify-center flex-shrink-0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <div>
+              <p class="text-slate-500 text-xs font-inter uppercase tracking-wider">Riesgo Comercial</p>
+              <div class="flex items-center gap-1 mt-0.5"><div class="w-2 h-2 rounded-full bg-orange-500"></div><span class="text-orange-400 text-xs font-inter">Medio-Alto</span></div>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm font-inter leading-relaxed mb-3">Baja conversión de usuarios gratuitos a planes Premium. CAC superior al proyectado en fases iniciales.</p>
+          <div class="mt-auto">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="w-5 h-5 rounded-full bg-electric bg-opacity-20 flex items-center justify-center flex-shrink-0">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <span class="text-electric-glow text-xs font-inter font-medium">Mitigación</span>
+            </div>
+            <p class="text-slate-400 text-sm font-inter">Campañas de Nurturing automatizadas con IA. Programa de recomendación con incentivos. A/B testing continuo.</p>
+          </div>
+        </div>
+
+        <!-- Risk 3: Economic -->
+        <div class="card-dark p-5 flex flex-col group cursor-default">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl bg-yellow-500 bg-opacity-15 flex items-center justify-center flex-shrink-0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div>
+              <p class="text-slate-500 text-xs font-inter uppercase tracking-wider">Riesgo Económico</p>
+              <div class="flex items-center gap-1 mt-0.5"><div class="w-2 h-2 rounded-full bg-yellow-500"></div><span class="text-yellow-400 text-xs font-inter">Controlado</span></div>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm font-inter leading-relaxed mb-3">Runway insuficiente si el punto de equilibrio se retrasa. Desviación en costes de infraestructura por crecimiento acelerado.</p>
+          <div class="mt-auto">
+            <div class="flex items-center gap-2 mb-1">
+              <div class="w-5 h-5 rounded-full bg-electric bg-opacity-20 flex items-center justify-center flex-shrink-0">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <span class="text-electric-glow text-xs font-inter font-medium">Mitigación</span>
+            </div>
+            <p class="text-slate-400 text-sm font-inter">Fondo de maniobra de 12.500€ reservado. Infraestructura serverless con escalado automático. Revisión mensual de burn rate.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 8: CONTROL Y EVALUACIÓN
+     ============================================================ -->
+<div class="screen grid-bg" id="screen-8">
+  <div class="flex flex-col h-full px-12 py-8">
+    <div class="mb-5 anim-up">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-1 h-8 bg-electric rounded-full"></div>
+        <span class="text-electric-glow font-inter text-sm font-medium tracking-widest uppercase">Sección 5 · 2 min</span>
+      </div>
+      <h2 class="font-montserrat font-black text-4xl text-white">Sistema de Calidad y Monitorización</h2>
+    </div>
+
+    <div class="flex gap-6 flex-1 min-h-0">
+      <!-- Monitoring cards -->
+      <div class="flex flex-col gap-4 w-3/5 anim-left anim-delay-1">
+        <!-- Daily -->
+        <div class="card-dark p-6 flex-1 flex gap-5 items-center">
+          <div class="relative flex-shrink-0">
+            <div class="w-20 h-20 rounded-full border-4 border-green-500 border-opacity-40 flex items-center justify-center relative">
+              <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="34" fill="none" stroke="#22c55e" stroke-width="4" stroke-dasharray="213.6" stroke-dashoffset="6.4" stroke-linecap="round" opacity="0.8"/>
+              </svg>
+              <div class="text-center">
+                <div class="font-montserrat font-black text-green-400 text-sm leading-none">99.7%</div>
+              </div>
+            </div>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="bg-green-500 bg-opacity-20 text-green-400 text-xs font-inter font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Diario</span>
+            </div>
+            <h4 class="font-montserrat font-bold text-white text-xl mb-2">Uptime de Servidores y Latencia IA</h4>
+            <div class="flex gap-6">
+              <div>
+                <p class="text-slate-500 text-xs font-inter">Uptime SLA</p>
+                <p class="text-green-400 font-inter font-bold">99.7%</p>
+              </div>
+              <div>
+                <p class="text-slate-500 text-xs font-inter">Latencia Media IA</p>
+                <p class="text-white font-inter font-bold">1.2s</p>
+              </div>
+              <div>
+                <p class="text-slate-500 text-xs font-inter">Errores API</p>
+                <p class="text-white font-inter font-bold">&lt;0.1%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly -->
+        <div class="card-dark p-6 flex-1 flex gap-5 items-center">
+          <div class="relative flex-shrink-0">
+            <div class="w-20 h-20 rounded-full border-4 border-electric border-opacity-40 flex items-center justify-center relative">
+              <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="34" fill="none" stroke="#2563EB" stroke-width="4" stroke-dasharray="213.6" stroke-dashoffset="85.4" stroke-linecap="round" opacity="0.8"/>
+              </svg>
+              <div class="text-center">
+                <div class="font-montserrat font-black text-electric-glow text-sm leading-none">60%</div>
+              </div>
+            </div>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="bg-electric bg-opacity-20 text-electric-glow text-xs font-inter font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Semanal</span>
+            </div>
+            <h4 class="font-montserrat font-bold text-white text-xl mb-2">Puntos de Abandono en la UI/UX</h4>
+            <div class="flex gap-6">
+              <div>
+                <p class="text-slate-500 text-xs font-inter">Step completado</p>
+                <p class="text-electric-glow font-inter font-bold">Módulo 1-3</p>
+              </div>
+              <div>
+                <p class="text-slate-500 text-xs font-inter">Abandono crítico</p>
+                <p class="text-white font-inter font-bold">Módulo 4</p>
+              </div>
+              <div>
+                <p class="text-slate-500 text-xs font-inter">Sesiones activas</p>
+                <p class="text-white font-inter font-bold">+2.400/sem</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly -->
+        <div class="card-dark p-6 flex-1 flex gap-5 items-center">
+          <div class="relative flex-shrink-0">
+            <div class="w-20 h-20 rounded-full border-4 border-purple-500 border-opacity-40 flex items-center justify-center relative">
+              <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="34" fill="none" stroke="#a855f7" stroke-width="4" stroke-dasharray="213.6" stroke-dashoffset="42.7" stroke-linecap="round" opacity="0.8"/>
+              </svg>
+              <div class="text-center">
+                <div class="font-montserrat font-black text-purple-400 text-sm leading-none">20x</div>
+              </div>
+            </div>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="bg-purple-500 bg-opacity-20 text-purple-400 text-xs font-inter font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Mensual</span>
+            </div>
+            <h4 class="font-montserrat font-bold text-white text-xl mb-2">Rentabilidad LTV vs CAC</h4>
+            <div class="flex gap-6">
+              <div>
+                <p class="text-slate-500 text-xs font-inter">LTV</p>
+                <p class="text-purple-400 font-inter font-bold">240€</p>
+              </div>
+              <div>
+                <p class="text-slate-500 text-xs font-inter">CAC</p>
+                <p class="text-white font-inter font-bold">12€</p>
+              </div>
+              <div>
+                <p class="text-slate-500 text-xs font-inter">Ratio LTV/CAC</p>
+                <p class="text-green-400 font-inter font-bold">20:1 ✓</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metric highlight card -->
+      <div class="flex-1 anim-right anim-delay-2">
+        <div class="metric-highlight rounded-2xl p-7 h-full flex flex-col justify-center relative overflow-hidden">
+          <div class="relative z-10">
+            <div class="flex items-center gap-2 mb-5">
+              <div class="w-2 h-2 rounded-full bg-electric animate-ping"></div>
+              <span class="text-electric-glow text-xs font-inter font-bold uppercase tracking-widest">Métrica de Calidad Diferencial</span>
+            </div>
+
+            <h3 class="font-montserrat font-black text-white text-2xl leading-tight mb-4">
+              No medimos tiempo retenido.<br>
+              <span class="text-electric">Medimos ENTREGABLES</span><br>
+              DESCARGADOS.
+            </h3>
+
+            <p class="text-slate-400 text-sm font-inter leading-relaxed mb-6">
+              El éxito real no es cuánto tiempo pasa el usuario en la plataforma, sino qué resultados tangibles obtiene.
+            </p>
+
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center gap-3 bg-slate-900 bg-opacity-60 rounded-xl p-3">
+                <div class="w-8 h-8 rounded-lg bg-electric bg-opacity-20 flex items-center justify-center flex-shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <span class="text-slate-300 text-sm font-inter">Informes de Validación descargados</span>
+              </div>
+              <div class="flex items-center gap-3 bg-slate-900 bg-opacity-60 rounded-xl p-3">
+                <div class="w-8 h-8 rounded-lg bg-electric bg-opacity-20 flex items-center justify-center flex-shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                </div>
+                <span class="text-slate-300 text-sm font-inter">Manuales de Identidad Visual generados</span>
+              </div>
+              <div class="flex items-center gap-3 bg-slate-900 bg-opacity-60 rounded-xl p-3">
+                <div class="w-8 h-8 rounded-lg bg-electric bg-opacity-20 flex items-center justify-center flex-shrink-0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </div>
+                <span class="text-slate-300 text-sm font-inter">Landing Pages publicadas y en producción</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 9: CONCLUSIONES
+     ============================================================ -->
+<div class="screen grid-bg" id="screen-9">
+  <div class="flex flex-col h-full px-12 py-8">
+    <div class="mb-6 anim-up">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-1 h-8 bg-electric rounded-full"></div>
+        <span class="text-electric-glow font-inter text-sm font-medium tracking-widest uppercase">Sección 6 · Cierre</span>
+      </div>
+      <h2 class="font-montserrat font-black text-4xl text-white">Conclusiones y Futuro de Sin Límites</h2>
+    </div>
+
+    <div class="flex gap-8 flex-1 min-h-0">
+      <!-- Conclusions -->
+      <div class="flex-1 flex flex-col justify-center gap-6 anim-left anim-delay-1">
+        <!-- Point 1 -->
+        <div class="card-dark p-7 flex gap-5 items-start group cursor-default" id="concl1">
+          <div class="w-12 h-12 rounded-xl bg-electric bg-opacity-15 border border-electric border-opacity-30 flex items-center justify-center flex-shrink-0 group-hover:bg-opacity-30 transition-all">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-montserrat font-bold text-white text-xl mb-2">Las barreras son estructurales, no de talento</h3>
+            <p class="text-slate-400 text-sm font-inter leading-relaxed">El problema no es la falta de capacidad del emprendedor, sino la ausencia de herramientas accesibles y asequibles. Sin Límites elimina estas barreras sistémicas democratizando el acceso al conocimiento estratégico.</p>
+          </div>
+        </div>
+
+        <!-- Point 2 -->
+        <div class="card-dark p-7 flex gap-5 items-start group cursor-default" id="concl2">
+          <div class="w-12 h-12 rounded-xl bg-electric bg-opacity-15 border border-electric border-opacity-30 flex items-center justify-center flex-shrink-0 group-hover:bg-opacity-30 transition-all">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-montserrat font-bold text-white text-xl mb-2">La IA actúa como igualador estratégico de oportunidades</h3>
+            <p class="text-slate-400 text-sm font-inter leading-relaxed">Respaldado por el NBER (+34% de productividad), la IA generativa proporciona a perfiles sin experiencia el mismo nivel de apoyo que antes solo podían obtener grandes corporaciones con consultores de alto coste.</p>
+          </div>
+        </div>
+
+        <!-- Point 3 -->
+        <div class="card-dark p-7 flex gap-5 items-start group cursor-default" id="concl3">
+          <div class="w-12 h-12 rounded-xl bg-electric bg-opacity-15 border border-electric border-opacity-30 flex items-center justify-center flex-shrink-0 group-hover:bg-opacity-30 transition-all">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-montserrat font-bold text-white text-xl mb-2">Sostenibilidad probada bajo modelo Freemium</h3>
+            <p class="text-slate-400 text-sm font-inter leading-relaxed">El modelo Freemium garantiza accesibilidad máxima mientras el ratio LTV/CAC de 20:1 y la proyección de +840.000€ en el Año 3 demuestran solidez económica y escala sostenible.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Closing block -->
+      <div class="w-80 flex flex-col gap-5 anim-right anim-delay-2">
+        <!-- Thank you -->
+        <div class="flex-1 metric-highlight rounded-2xl p-7 flex flex-col items-center justify-center text-center relative overflow-hidden">
+          <div class="relative z-10">
+            <!-- Logo small -->
+            <svg width="56" height="56" viewBox="0 0 120 120" fill="none" class="mb-4 mx-auto">
+              <circle cx="55" cy="60" r="44" stroke="url(#blueGrad)" stroke-width="2.5" fill="none"/>
+              <ellipse cx="55" cy="60" rx="44" ry="18" stroke="url(#blueGrad)" stroke-width="1.8" fill="none" opacity="0.7"/>
+              <line x1="11" y1="60" x2="99" y2="60" stroke="url(#blueGrad)" stroke-width="1.8" opacity="0.7"/>
+              <line x1="55" y1="16" x2="55" y2="104" stroke="url(#blueGrad)" stroke-width="1.8" opacity="0.5"/>
+              <line x1="72" y1="60" x2="110" y2="60" stroke="#3B82F6" stroke-width="3" stroke-linecap="round"/>
+              <polyline points="100,50 112,60 100,70" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+              <path d="M 99 44 A 44 44 0 0 1 99 76" stroke="#020617" stroke-width="5" fill="none"/>
+              <path d="M 99 44 A 44 44 0 0 1 99 76" stroke="url(#blueGrad)" stroke-width="2.5" fill="none"/>
+            </svg>
+
+            <h3 class="font-montserrat font-black text-white text-2xl mb-2">Muchas gracias.</h3>
+            <p class="text-electric-glow text-base font-inter mb-1">Abierto al turno de preguntas.</p>
+            <div class="w-16 h-0.5 bg-electric mx-auto my-4 rounded-full"></div>
+            <p class="text-slate-500 text-xs font-inter">Alejandro Vera Suárez</p>
+            <p class="text-slate-600 text-xs font-inter mt-1">Mentora: Victoria Rodriguez</p>
+            <p class="text-slate-600 text-xs font-inter">Cádiz, 2026</p>
+          </div>
+        </div>
+
+        <!-- Future roadmap -->
+        <div class="card-dark p-5">
+          <p class="text-electric-glow text-xs font-inter uppercase tracking-widest mb-3">Próximos Pasos</p>
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-2">
+              <div class="w-1.5 h-1.5 rounded-full bg-electric flex-shrink-0"></div>
+              <span class="text-slate-400 text-xs font-inter">Expansión a LATAM (Año 2)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-1.5 h-1.5 rounded-full bg-electric flex-shrink-0"></div>
+              <span class="text-slate-400 text-xs font-inter">Módulo de Financiación IA (Año 2)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-1.5 h-1.5 rounded-full bg-electric flex-shrink-0"></div>
+              <span class="text-slate-400 text-xs font-inter">API pública para aceleradoras (Año 3)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-1.5 h-1.5 rounded-full bg-slate-600 flex-shrink-0"></div>
+              <span class="text-slate-600 text-xs font-inter">Serie A — Ronda de inversión (Año 3)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Go back home -->
+        <button onclick="goTo(0)" class="text-slate-500 hover:text-electric-glow text-xs font-inter transition-colors text-center py-2 border border-slate-800 hover:border-electric hover:border-opacity-30 rounded-xl">
+          ← Volver al inicio
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     NAVIGATION BAR
+     ============================================================ -->
+<div class="nav-bar" id="navBar">
+  <button class="nav-btn" onclick="prevScreen()" title="Anterior (←)">‹</button>
+  <div class="flex gap-2 items-center" id="navDots"></div>
+  <span class="nav-label" id="navLabel">Inicio</span>
+  <button class="nav-btn" onclick="nextScreen()" title="Siguiente (→)">›</button>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+// ---- State ----
+const TOTAL = 10;
+let current = 0;
+
+const LABELS = [
+  'Inicio', '1. Problema', '2. Marco Teórico',
+  '3. Arquitectura', 'Demo Live', '5. Marketing',
+  '6. Finanzas', '7. Riesgos', '8. Control', '9. Conclusiones'
+];
+
+// ---- Init ----
+function initNav() {
+  const dots = document.getElementById('navDots');
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    d.title = LABELS[i];
+    dots.appendChild(d);
+  }
+}
+
+function updateNav() {
+  const dots = document.querySelectorAll('.nav-dot');
+  dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  document.getElementById('navLabel').textContent = LABELS[current];
+}
+
+function goTo(n) {
+  if (n < 0 || n >= TOTAL) return;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + n).classList.add('active');
+  current = n;
+  updateNav();
+  triggerAnimations(n);
+}
+
+function nextScreen() { goTo(current + 1); }
+function prevScreen() { goTo(current - 1); }
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextScreen(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevScreen(); }
+});
+
+// ---- Animations on screen enter ----
+function triggerAnimations(n) {
+  const screen = document.getElementById('screen-' + n);
+  // Re-trigger CSS animations by forcing reflow
+  const anims = screen.querySelectorAll('[class*="anim-"]');
+  anims.forEach(el => {
+    el.style.animation = 'none';
+    el.offsetHeight; // reflow
+    el.style.animation = '';
+  });
+
+  // Counters for screen 1
+  if (n === 1) {
+    animateCounter('stat1', 94, '%', 1200);
+    animateCounter('stat2', 25.7, '%', 1400, 1);
+  }
+
+  // Progress bars screen 5
+  if (n === 5) {
+    document.querySelectorAll('.progress-bar').forEach(bar => {
+      bar.style.animation = 'none';
+      bar.offsetHeight;
+      bar.style.animation = 'progressFill 1.5s ease forwards';
+    });
+  }
+}
+
+function animateCounter(id, target, suffix, duration, decimals = 0) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = performance.now();
+  function step(ts) {
+    const progress = Math.min((ts - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const val = (target * eased).toFixed(decimals);
+    el.textContent = val + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ---- Pilar cards toggle ----
+function togglePilar(card) {
+  const isActive = card.classList.contains('pilar-active');
+  document.querySelectorAll('.pilar-active').forEach(c => {
+    c.classList.remove('pilar-active');
+    c.style.borderColor = '';
+    c.style.boxShadow = '';
+  });
+  if (!isActive) {
+    card.classList.add('pilar-active');
+    card.style.borderColor = 'rgba(37,99,235,0.7)';
+    card.style.boxShadow = '0 0 25px rgba(37,99,235,0.25)';
+  }
+}
+
+// ---- Demo ----
+const demoData = {
+  'default': {
+    persona: {
+      name: 'Carlos M., 58 años',
+      details: [
+        { label: 'Perfil', value: 'Jubilado anticipado / Activo' },
+        { label: 'Localización', value: 'España, ciudades medianas' },
+        { label: 'Pain principal', value: 'Sedentarismo post-trabajo' },
+        { label: 'Motivación', value: 'Salud, sociabilización' },
+        { label: 'Canal preferido', value: 'WhatsApp, YouTube' },
+        { label: 'Disposición a pagar', value: '8–15€/mes' },
+      ]
+    },
+    value: [
+      { icon: '⚡', title: 'Para el usuario', desc: 'Rutinas personalizadas por IA adaptadas a limitaciones físicas. Progreso visible y gamificado.' },
+      { icon: '🛡️', title: 'Diferenciador', desc: 'Enfoque médico-preventivo vs fitness competitivo. Aval de fisioterapeutas.' },
+      { icon: '📈', title: 'Resultado clave', desc: 'Mejora de movilidad en 30 días o devolución garantizada del dinero.' },
+    ],
+    identity: {
+      colors: ['#0F766E','#14B8A6','#F0FDF4','#1E293B'],
+      names: ['EtapaFit', 'VitalPlus', 'MayorActivo'],
+      tone: 'Cálido, empático y motivador. Evita tecnicismos.',
+      fonts: ['Nunito', 'Source Sans Pro'],
+    }
+  }
+};
+
+function setDemo(text) {
+  document.getElementById('demoInput').value = text;
+}
+
+function runDemo() {
+  const input = document.getElementById('demoInput').value.trim();
+  if (!input) {
+    document.getElementById('demoInput').focus();
+    document.getElementById('demoInput').style.borderColor = '#ef4444';
+    setTimeout(() => document.getElementById('demoInput').style.borderColor = '', 1500);
+    return;
+  }
+
+  const btn = document.getElementById('demoBtn');
+  const status = document.getElementById('demoStatus');
+  const results = document.getElementById('demoResults');
+  const placeholder = document.getElementById('demoPlaceholder');
+
+  btn.disabled = true;
+  btn.textContent = 'Procesando...';
+  status.classList.remove('hidden');
+  results.style.display = 'none';
+  placeholder.style.display = 'flex';
+
+  setTimeout(() => {
+    status.classList.add('hidden');
+    results.style.removeProperty('display');
+    placeholder.style.display = 'none';
+    btn.disabled = false;
+    btn.textContent = '[ Ejecutar Validación con IA ]';
+    showTab(0, input);
+  }, 2200);
+}
+
+function showTab(idx, ideaText) {
+  const tabs = document.querySelectorAll('.tab-btn');
+  tabs.forEach((t, i) => {
+    t.classList.toggle('active', i === idx);
+    t.style.color = i === idx ? '#60A5FA' : '';
+    t.style.borderBottomColor = i === idx ? '#2563EB' : 'transparent';
+  });
+
+  const data = demoData['default'];
+  const content = document.getElementById('tabContent');
+  if (!content) return;
+
+  if (idx === 0) {
+    content.innerHTML = `
+      <div class="p-1">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-12 h-12 rounded-full bg-electric bg-opacity-20 flex items-center justify-center text-xl">👤</div>
+          <div><h4 class="font-montserrat font-bold text-white text-lg">${data.persona.name}</h4><p class="text-electric-glow text-xs font-inter">Buyer Persona Ideal generado por IA</p></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          ${data.persona.details.map(d => `
+            <div class="bg-slate-900 rounded-xl p-3">
+              <p class="text-slate-500 text-xs font-inter uppercase tracking-wider mb-1">${d.label}</p>
+              <p class="text-white text-sm font-inter font-medium">${d.value}</p>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  } else if (idx === 1) {
+    content.innerHTML = `
+      <div class="p-1 flex flex-col gap-3">
+        ${data.value.map(v => `
+          <div class="bg-slate-900 rounded-xl p-4 flex gap-3">
+            <span class="text-2xl flex-shrink-0">${v.icon}</span>
+            <div><h5 class="font-inter font-semibold text-white text-sm mb-1">${v.title}</h5><p class="text-slate-400 text-sm font-inter">${v.desc}</p></div>
+          </div>`).join('')}
+      </div>`;
+  } else if (idx === 2) {
+    content.innerHTML = `
+      <div class="p-1">
+        <p class="text-slate-500 text-xs font-inter uppercase tracking-wider mb-2">Paleta Cromática Sugerida</p>
+        <div class="flex gap-2 mb-4">
+          ${data.identity.colors.map(c => `<div class="flex-1 h-10 rounded-lg border border-slate-800" style="background:${c}"></div>`).join('')}
+        </div>
+        <p class="text-slate-500 text-xs font-inter uppercase tracking-wider mb-2">Propuestas de Naming</p>
+        <div class="flex gap-2 mb-4">
+          ${data.identity.names.map(n => `<div class="flex-1 bg-slate-900 border border-slate-800 rounded-lg py-2 px-3 text-center text-white text-sm font-montserrat font-bold">${n}</div>`).join('')}
+        </div>
+        <p class="text-slate-500 text-xs font-inter uppercase tracking-wider mb-2">Tono de Voz</p>
+        <p class="text-slate-300 text-sm font-inter bg-slate-900 rounded-xl p-3">${data.identity.tone}</p>
+        <p class="text-slate-500 text-xs font-inter uppercase tracking-wider mt-3 mb-2">Tipografías</p>
+        <div class="flex gap-2">${data.identity.fonts.map(f => `<div class="bg-slate-900 rounded-lg px-3 py-2 text-slate-300 text-sm font-inter">${f}</div>`).join('')}</div>
+      </div>`;
+  }
+}
+
+// ---- Boot ----
+initNav();
+updateNav();
+
+// Init tab styling
+document.addEventListener('DOMContentLoaded', () => {
+  const tabs = document.querySelectorAll('.tab-btn');
+  tabs.forEach((t, i) => {
+    if (i === 0) { t.style.color = '#60A5FA'; t.style.borderBottomColor = '#2563EB'; }
+    else { t.style.borderBottomColor = 'transparent'; }
+  });
+});
+</script>
+</body>
+</html>
