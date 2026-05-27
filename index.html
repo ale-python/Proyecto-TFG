@@ -808,6 +808,109 @@ tailwind.config = {
   }
 
   /* ============================================================
+     HEADER FIJO — logo + navegación por secciones
+     ============================================================ */
+  #site-header {
+    position: fixed;
+    top: 2px; left: 0; right: 0;
+    height: 62px;
+    z-index: 150;
+    background: rgba(4,8,15,0.72);
+    border-bottom: 1px solid rgba(37,99,235,0.12);
+    backdrop-filter: blur(22px) saturate(170%);
+    box-shadow: 0 1px 0 rgba(37,99,235,0.07), 0 4px 20px rgba(0,0,0,0.25);
+    transition: background 0.4s ease, border-color 0.4s ease;
+  }
+  #site-header:hover {
+    background: rgba(4,8,15,0.90);
+    border-color: rgba(37,99,235,0.20);
+  }
+  .header-inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .header-logo-btn {
+    display: flex; align-items: center; gap: 10px;
+    background: none; border: none; cursor: pointer;
+    flex-shrink: 0; text-decoration: none;
+    padding: 0;
+  }
+  .header-logo-svg { width: 36px; height: 30px; flex-shrink: 0; }
+  .header-brand {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800; font-size: 17px;
+    color: #fff; letter-spacing: -0.02em;
+    white-space: nowrap;
+    background: linear-gradient(90deg, #fff 0%, #93c5fd 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-nav {
+    display: flex; gap: 2px; flex: 1; justify-content: center;
+  }
+  .header-nav button {
+    background: none; border: none; cursor: pointer;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+    color: var(--text-muted); padding: 7px 14px; border-radius: 8px;
+    transition: color 0.2s, background 0.2s; white-space: nowrap;
+    letter-spacing: 0.01em;
+  }
+  .header-nav button:hover { color: #fff; background: rgba(37,99,235,0.10); }
+  .header-nav button.active-nav { color: var(--blue-light); background: rgba(37,99,235,0.08); }
+  .header-cta-btn {
+    flex-shrink: 0;
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+    color: #fff; background: rgba(37,99,235,0.16);
+    border: 1px solid rgba(37,99,235,0.38); border-radius: 20px;
+    padding: 7px 18px; cursor: pointer; text-decoration: none;
+    letter-spacing: 0.03em; transition: all 0.25s; white-space: nowrap;
+  }
+  .header-cta-btn:hover {
+    background: rgba(37,99,235,0.32); border-color: rgba(37,99,235,0.65);
+    box-shadow: 0 0 18px rgba(37,99,235,0.22);
+  }
+
+  /* Todas las secciones (excepto hero) dejan espacio al header */
+  .screen:not(#screen-0) { padding-top: 64px; }
+
+  /* ============================================================
+     STATS BAR — hero
+     ============================================================ */
+  .hero-stats {
+    display: flex; gap: 0; align-items: stretch;
+    background: rgba(8,14,28,0.8);
+    border: 1px solid rgba(37,99,235,0.18);
+    border-radius: 16px; overflow: hidden;
+    backdrop-filter: blur(12px);
+  }
+  .hero-stat {
+    flex: 1; padding: 14px 24px; text-align: center;
+    position: relative;
+    transition: background 0.25s;
+  }
+  .hero-stat:hover { background: rgba(37,99,235,0.07); }
+  .hero-stat:not(:last-child)::after {
+    content: ''; position: absolute;
+    right: 0; top: 20%; height: 60%; width: 1px;
+    background: rgba(37,99,235,0.18);
+  }
+  .hero-stat-num {
+    font-family: 'Montserrat', sans-serif; font-weight: 900;
+    font-size: 22px; color: #fff;
+    letter-spacing: -0.03em; line-height: 1;
+  }
+  .hero-stat-lbl {
+    font-family: 'Inter', sans-serif; font-size: 10px;
+    color: var(--text-muted); letter-spacing: 0.06em;
+    text-transform: uppercase; margin-top: 4px;
+  }
+
+  /* ============================================================
      SCROLLBAR GLOBAL
      ============================================================ */
   ::-webkit-scrollbar { width: 0; height: 0; }
@@ -816,6 +919,46 @@ tailwind.config = {
 <body class="bg-slate-950">
 <!-- Barra de progreso superior -->
 <div id="topProgress"></div>
+
+<!-- ============================================================
+     HEADER FIJO
+     ============================================================ -->
+<header id="site-header">
+  <div class="header-inner">
+    <!-- Logo + marca -->
+    <button class="header-logo-btn" onclick="goTo(0)" aria-label="Inicio">
+      <svg class="header-logo-svg logo-svg" viewBox="0 0 130 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="hgc"><circle cx="52" cy="55" r="43"/></clipPath>
+        </defs>
+        <circle cx="52" cy="55" r="43" stroke="#3B82F6" stroke-width="3.8" stroke-linecap="round"/>
+        <g clip-path="url(#hgc)">
+          <ellipse cx="52" cy="55" rx="43" ry="26" stroke="#3B82F6" stroke-width="2.8" fill="none"/>
+          <ellipse cx="52" cy="55" rx="43" ry="12" stroke="#3B82F6" stroke-width="2.8" fill="none"/>
+          <line x1="52" y1="12" x2="52" y2="98" stroke="#3B82F6" stroke-width="2.5"/>
+          <path d="M 33 14 Q 20 55 33 96" stroke="#3B82F6" stroke-width="2.2" fill="none"/>
+        </g>
+        <line x1="80" y1="55" x2="124" y2="55" stroke="#3B82F6" stroke-width="3.8" stroke-linecap="round"/>
+        <path d="M 110 43 L 124 55 L 110 67" stroke="#3B82F6" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span class="header-brand">Sin Límites</span>
+    </button>
+
+    <!-- Nav por secciones -->
+    <nav class="header-nav" aria-label="Secciones">
+      <button onclick="goTo(1)"  data-nav="1" >El Problema</button>
+      <button onclick="goTo(3)"  data-nav="3" >La Plataforma</button>
+      <button onclick="goTo(4)"  data-nav="4" >Demo</button>
+      <button onclick="goTo(6)"  data-nav="6" >Proyección</button>
+      <button onclick="goTo(9)"  data-nav="9" >Inversión</button>
+    </nav>
+
+    <!-- CTA -->
+    <a class="header-cta-btn" href="mailto:hola@sinlimites.es">
+      Solicitar reunión →
+    </a>
+  </div>
+</header>
 
 <!-- SVG DEFS (logo) -->
 <svg width="0" height="0" style="position:absolute">
@@ -848,30 +991,27 @@ tailwind.config = {
 
     <!-- Main content -->
     <div class="flex flex-col items-center gap-8 anim-up">
-      <!-- Logo SVG -->
+      <!-- Logo SVG real -->
       <div class="pulse-glow rounded-full p-1">
-        <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Globe circle -->
-          <circle cx="55" cy="60" r="44" stroke="url(#blueGrad)" stroke-width="2.5" fill="none"/>
-          <!-- Horizontal lines -->
-          <ellipse cx="55" cy="60" rx="44" ry="18" stroke="url(#blueGrad)" stroke-width="1.8" fill="none" opacity="0.7"/>
-          <line x1="11" y1="60" x2="99" y2="60" stroke="url(#blueGrad)" stroke-width="1.8" opacity="0.7"/>
-          <line x1="15" y1="42" x2="95" y2="42" stroke="url(#blueGrad)" stroke-width="1.2" opacity="0.4"/>
-          <line x1="15" y1="78" x2="95" y2="78" stroke="url(#blueGrad)" stroke-width="1.2" opacity="0.4"/>
-          <!-- Vertical line (meridian) -->
-          <line x1="55" y1="16" x2="55" y2="104" stroke="url(#blueGrad)" stroke-width="1.8" opacity="0.5"/>
-          <!-- Arrow breaking right -->
-          <line x1="72" y1="60" x2="110" y2="60" stroke="#3B82F6" stroke-width="3" stroke-linecap="round"/>
-          <polyline points="100,50 112,60 100,70" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-          <!-- Cover arc (white fill to create "breaking out" illusion) -->
-          <path d="M 99 44 A 44 44 0 0 1 99 76" stroke="#020617" stroke-width="5" fill="none"/>
-          <path d="M 99 44 A 44 44 0 0 1 99 76" stroke="url(#blueGrad)" stroke-width="2.5" fill="none"/>
+        <svg class="logo-svg" width="118" height="100" viewBox="0 0 130 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="heroGlobeClip"><circle cx="52" cy="55" r="43"/></clipPath>
+          </defs>
+          <circle cx="52" cy="55" r="43" stroke="#3B82F6" stroke-width="3.8" stroke-linecap="round"/>
+          <g clip-path="url(#heroGlobeClip)">
+            <ellipse cx="52" cy="55" rx="43" ry="26" stroke="#3B82F6" stroke-width="2.8" fill="none"/>
+            <ellipse cx="52" cy="55" rx="43" ry="12" stroke="#3B82F6" stroke-width="2.8" fill="none"/>
+            <line x1="52" y1="12" x2="52" y2="98" stroke="#3B82F6" stroke-width="2.5"/>
+            <path d="M 33 14 Q 20 55 33 96" stroke="#3B82F6" stroke-width="2.2" fill="none"/>
+          </g>
+          <line x1="80" y1="55" x2="124" y2="55" stroke="#3B82F6" stroke-width="3.8" stroke-linecap="round"/>
+          <path d="M 110 43 L 124 55 L 110 67" stroke="#3B82F6" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         </svg>
       </div>
 
       <!-- Brand name -->
       <div class="text-center">
-        <h1 class="font-montserrat font-black text-7xl text-white text-glow tracking-tight leading-none">
+        <h1 class="font-montserrat font-black text-7xl gradient-text tracking-tight leading-none">
           Sin Límites
         </h1>
         <p class="font-inter text-electric-glow text-lg mt-3 font-light tracking-widest uppercase">
@@ -886,8 +1026,25 @@ tailwind.config = {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
 
-      <!-- Tagline -->
-      <p class="text-slate-600 text-sm font-inter tracking-widest uppercase">Powered by Gemini 3 Pro API</p>
+      <!-- Stats bar inversores -->
+      <div class="hero-stats anim-up anim-delay-3">
+        <div class="hero-stat">
+          <div class="hero-stat-num" style="color:#60A5FA">3M+</div>
+          <div class="hero-stat-lbl">Emprendedores en España</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num" style="color:#fff">+34%</div>
+          <div class="hero-stat-lbl">Productividad con IA · NBER</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num" style="color:#34d399">20:1</div>
+          <div class="hero-stat-lbl">Ratio LTV / CAC proyectado</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num" style="color:#60A5FA">€1.4M</div>
+          <div class="hero-stat-lbl">Ingresos proyectados Año 3</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1115,17 +1272,17 @@ tailwind.config = {
           <p class="text-electric-glow text-xs font-inter uppercase tracking-widest mb-4">Identidad Corporativa</p>
           <!-- Logo -->
           <div class="flex items-center gap-4 mb-6">
-            <svg width="64" height="64" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="55" cy="60" r="44" stroke="url(#blueGrad)" stroke-width="2.5" fill="none"/>
-              <ellipse cx="55" cy="60" rx="44" ry="18" stroke="url(#blueGrad)" stroke-width="1.8" fill="none" opacity="0.7"/>
-              <line x1="11" y1="60" x2="99" y2="60" stroke="url(#blueGrad)" stroke-width="1.8" opacity="0.7"/>
-              <line x1="15" y1="42" x2="95" y2="42" stroke="url(#blueGrad)" stroke-width="1.2" opacity="0.4"/>
-              <line x1="15" y1="78" x2="95" y2="78" stroke="url(#blueGrad)" stroke-width="1.2" opacity="0.4"/>
-              <line x1="55" y1="16" x2="55" y2="104" stroke="url(#blueGrad)" stroke-width="1.8" opacity="0.5"/>
-              <line x1="72" y1="60" x2="110" y2="60" stroke="#3B82F6" stroke-width="3" stroke-linecap="round"/>
-              <polyline points="100,50 112,60 100,70" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-              <path d="M 99 44 A 44 44 0 0 1 99 76" stroke="#020617" stroke-width="5" fill="none"/>
-              <path d="M 99 44 A 44 44 0 0 1 99 76" stroke="url(#blueGrad)" stroke-width="2.5" fill="none"/>
+            <svg class="logo-svg" width="58" height="49" viewBox="0 0 130 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs><clipPath id="s3c"><circle cx="52" cy="55" r="43"/></clipPath></defs>
+              <circle cx="52" cy="55" r="43" stroke="#3B82F6" stroke-width="3.8"/>
+              <g clip-path="url(#s3c)">
+                <ellipse cx="52" cy="55" rx="43" ry="26" stroke="#3B82F6" stroke-width="2.8" fill="none"/>
+                <ellipse cx="52" cy="55" rx="43" ry="12" stroke="#3B82F6" stroke-width="2.8" fill="none"/>
+                <line x1="52" y1="12" x2="52" y2="98" stroke="#3B82F6" stroke-width="2.5"/>
+                <path d="M 33 14 Q 20 55 33 96" stroke="#3B82F6" stroke-width="2.2" fill="none"/>
+              </g>
+              <line x1="80" y1="55" x2="124" y2="55" stroke="#3B82F6" stroke-width="3.8" stroke-linecap="round"/>
+              <path d="M 110 43 L 124 55 L 110 67" stroke="#3B82F6" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
             </svg>
             <div>
               <div class="font-montserrat font-black text-3xl text-white">Sin Límites</div>
@@ -1949,58 +2106,83 @@ tailwind.config = {
         </div>
       </div>
 
-      <!-- Closing block -->
-      <div class="w-80 flex flex-col gap-5 anim-right anim-delay-2">
-        <!-- Thank you -->
-        <div class="flex-1 metric-highlight rounded-2xl p-7 flex flex-col items-center justify-center text-center relative overflow-hidden">
+      <!-- Investment CTA -->
+      <div class="w-80 flex flex-col gap-4 anim-right anim-delay-2">
+        <!-- Ticket -->
+        <div class="metric-highlight rounded-2xl p-6 flex flex-col gap-4 flex-1 relative overflow-hidden">
           <div class="relative z-10">
-            <!-- Logo small -->
-            <svg width="56" height="56" viewBox="0 0 120 120" fill="none" class="mb-4 mx-auto">
-              <circle cx="55" cy="60" r="44" stroke="url(#blueGrad)" stroke-width="2.5" fill="none"/>
-              <ellipse cx="55" cy="60" rx="44" ry="18" stroke="url(#blueGrad)" stroke-width="1.8" fill="none" opacity="0.7"/>
-              <line x1="11" y1="60" x2="99" y2="60" stroke="url(#blueGrad)" stroke-width="1.8" opacity="0.7"/>
-              <line x1="55" y1="16" x2="55" y2="104" stroke="url(#blueGrad)" stroke-width="1.8" opacity="0.5"/>
-              <line x1="72" y1="60" x2="110" y2="60" stroke="#3B82F6" stroke-width="3" stroke-linecap="round"/>
-              <polyline points="100,50 112,60 100,70" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-              <path d="M 99 44 A 44 44 0 0 1 99 76" stroke="#020617" stroke-width="5" fill="none"/>
-              <path d="M 99 44 A 44 44 0 0 1 99 76" stroke="url(#blueGrad)" stroke-width="2.5" fill="none"/>
-            </svg>
-
-            <h3 class="font-montserrat font-black text-white text-2xl mb-2">Muchas gracias.</h3>
-            <p class="text-electric-glow text-base font-inter mb-1">Abierto al turno de preguntas.</p>
-            <div class="w-16 h-0.5 bg-electric mx-auto my-4 rounded-full"></div>
-            <p class="text-slate-500 text-xs font-inter">Alejandro Vera Suárez · Fundador</p>
-            <p class="text-slate-600 text-xs font-inter mt-1">sinlimites.es · Cádiz, 2026</p>
+            <div class="flex items-center gap-2 mb-4">
+              <div class="tech-badge">Ronda Seed Abierta</div>
+            </div>
+            <div class="text-center mb-5">
+              <p class="text-slate-400 text-xs font-inter uppercase tracking-widest mb-1">Buscamos</p>
+              <div class="font-montserrat font-black text-4xl gradient-text">137.500 €</div>
+              <p class="text-slate-500 text-xs font-inter mt-1">Pre-Seed · ENISA + Promotores</p>
+            </div>
+            <div class="flex flex-col gap-2 mb-5">
+              <div class="flex justify-between items-center py-2 border-b border-slate-800">
+                <span class="text-slate-400 text-xs font-inter">Runway proyectado</span>
+                <span class="text-white text-xs font-inter font-bold">18 meses</span>
+              </div>
+              <div class="flex justify-between items-center py-2 border-b border-slate-800">
+                <span class="text-slate-400 text-xs font-inter">Break-even</span>
+                <span class="text-electric-glow text-xs font-inter font-bold">Año 2 (50K usuarios)</span>
+              </div>
+              <div class="flex justify-between items-center py-2 border-b border-slate-800">
+                <span class="text-slate-400 text-xs font-inter">ROI proyectado A3</span>
+                <span class="text-green-400 text-xs font-inter font-bold">+511%</span>
+              </div>
+              <div class="flex justify-between items-center py-2">
+                <span class="text-slate-400 text-xs font-inter">Equity ofrecido</span>
+                <span class="text-white text-xs font-inter font-bold">A negociar</span>
+              </div>
+            </div>
+            <a href="mailto:hola@sinlimites.es" class="btn-primary w-full justify-center" style="padding:12px 20px;font-size:13px;border-radius:12px;text-decoration:none;display:flex;align-items:center;gap:8px;">
+              Hablar con el equipo
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
           </div>
         </div>
 
-        <!-- Future roadmap -->
+        <!-- Próximos pasos -->
         <div class="card-dark p-5">
-          <p class="text-electric-glow text-xs font-inter uppercase tracking-widest mb-3">Próximos Pasos</p>
+          <p class="text-electric-glow text-xs font-inter uppercase tracking-widest mb-3">Hoja de ruta post-inversión</p>
           <div class="flex flex-col gap-2">
             <div class="flex items-center gap-2">
               <div class="w-1.5 h-1.5 rounded-full bg-electric flex-shrink-0"></div>
-              <span class="text-slate-400 text-xs font-inter">Expansión a LATAM (Año 2)</span>
+              <span class="text-slate-400 text-xs font-inter">MVP + beta privada — Q3 2026</span>
             </div>
             <div class="flex items-center gap-2">
               <div class="w-1.5 h-1.5 rounded-full bg-electric flex-shrink-0"></div>
-              <span class="text-slate-400 text-xs font-inter">Módulo de Financiación IA (Año 2)</span>
+              <span class="text-slate-400 text-xs font-inter">Lanzamiento público — Q4 2026</span>
             </div>
             <div class="flex items-center gap-2">
               <div class="w-1.5 h-1.5 rounded-full bg-electric flex-shrink-0"></div>
-              <span class="text-slate-400 text-xs font-inter">API pública para aceleradoras (Año 3)</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <div class="w-1.5 h-1.5 rounded-full bg-slate-600 flex-shrink-0"></div>
-              <span class="text-slate-600 text-xs font-inter">Serie A — Ronda de inversión (Año 3)</span>
+              <span class="text-slate-400 text-xs font-inter">Expansión LATAM + Serie A — 2028</span>
             </div>
           </div>
         </div>
 
-        <!-- Go back home -->
-        <button onclick="goTo(0)" class="text-slate-500 hover:text-electric-glow text-xs font-inter transition-colors text-center py-2 border border-slate-800 hover:border-electric hover:border-opacity-30 rounded-xl">
-          ← Volver al inicio
-        </button>
+        <!-- Identidad -->
+        <div class="flex items-center gap-3 px-4 py-3 rounded-xl border border-slate-800">
+          <svg class="logo-svg" width="28" height="24" viewBox="0 0 130 110" fill="none">
+            <defs><clipPath id="c9"><circle cx="52" cy="55" r="43"/></clipPath></defs>
+            <circle cx="52" cy="55" r="43" stroke="#3B82F6" stroke-width="3.8"/>
+            <g clip-path="url(#c9)">
+              <ellipse cx="52" cy="55" rx="43" ry="26" stroke="#3B82F6" stroke-width="2.8" fill="none"/>
+              <ellipse cx="52" cy="55" rx="43" ry="12" stroke="#3B82F6" stroke-width="2.8" fill="none"/>
+              <line x1="52" y1="12" x2="52" y2="98" stroke="#3B82F6" stroke-width="2.5"/>
+              <path d="M 33 14 Q 20 55 33 96" stroke="#3B82F6" stroke-width="2.2" fill="none"/>
+            </g>
+            <line x1="80" y1="55" x2="124" y2="55" stroke="#3B82F6" stroke-width="3.8" stroke-linecap="round"/>
+            <path d="M 110 43 L 124 55 L 110 67" stroke="#3B82F6" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+          <div>
+            <p class="text-white text-xs font-inter font-semibold">Alejandro Vera Suárez</p>
+            <p class="text-slate-500 text-xs font-inter">Fundador · sinlimites.es · Cádiz 2026</p>
+          </div>
+          <button onclick="goTo(0)" class="ml-auto text-slate-600 hover:text-electric-glow transition-colors text-xs font-inter">↑ Inicio</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2057,6 +2239,11 @@ function updateNav() {
   if (lbl) lbl.textContent = LABELS[current];
   const bar = document.getElementById('topProgress');
   if (bar) bar.style.width = ((current / (TOTAL - 1)) * 100).toFixed(1) + '%';
+  // Sincroniza el botón activo en el header
+  document.querySelectorAll('.header-nav button').forEach(btn => {
+    const sec = parseInt(btn.dataset.nav, 10);
+    btn.classList.toggle('active-nav', sec === current);
+  });
 }
 
 /* ============================================================
