@@ -2020,120 +2020,209 @@ tailwind.config = {
      JAVASCRIPT
      ============================================================ -->
 <script>
-// ---- State ----
+/* ============================================================
+   ESTADO GLOBAL
+   ============================================================ */
 const TOTAL = 10;
 let current = 0;
+let isNavigating = false;   // guard contra navegación rápida
+let navClearTimer = null;   // limpieza del .leaving
 
 const LABELS = [
-  'Inicio', '1. Problema', '2. Marco Teórico',
-  '3. Arquitectura', 'Demo Live', '5. Marketing',
-  '6. Finanzas', '7. Riesgos', '8. Control', '9. Conclusiones'
+  'Inicio', 'El Problema', 'Base Científica',
+  'La Plataforma', 'Demo en Vivo', 'Go-To-Market',
+  'Proyección', 'Ejecución', 'Calidad', 'La Oportunidad'
 ];
 
-// ---- Init ----
+/* ============================================================
+   BARRA DE NAV — INIT Y UPDATE
+   ============================================================ */
 function initNav() {
-  const dots = document.getElementById('navDots');
-  for (let i = 0; i < TOTAL; i++) {
-    const d = document.createElement('div');
-    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
-    d.onclick = () => goTo(i);
-    d.title = LABELS[i];
-    dots.appendChild(d);
-  }
+  const container = document.getElementById('navDots');
+  if (!container) return;
+  LABELS.forEach((label, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.title = label;
+    dot.setAttribute('aria-label', label);
+    dot.addEventListener('click', () => goTo(i));
+    container.appendChild(dot);
+  });
 }
 
 function updateNav() {
-  const dots = document.querySelectorAll('.nav-dot');
-  dots.forEach((d, i) => d.classList.toggle('active', i === current));
-  document.getElementById('navLabel').textContent = LABELS[current];
+  document.querySelectorAll('.nav-dot')
+    .forEach((d, i) => d.classList.toggle('active', i === current));
+  const lbl = document.getElementById('navLabel');
+  if (lbl) lbl.textContent = LABELS[current];
+  const bar = document.getElementById('topProgress');
+  if (bar) bar.style.width = ((current / (TOTAL - 1)) * 100).toFixed(1) + '%';
 }
 
+/* ============================================================
+   NAVEGACIÓN PRINCIPAL — transiciones CSS leave / enter
+   ============================================================ */
+const LEAVE_MS = 560;   // debe ser >= duración de .screen.leaving en CSS
+
 function goTo(n) {
-  if (n < 0 || n >= TOTAL) return;
-  const prev = document.getElementById('screen-' + current);
-  if (prev && current !== n) {
-    prev.classList.add('leaving');
-    setTimeout(() => prev.classList.remove('leaving'), 600);
+  if (n < 0 || n >= TOTAL || n === current || isNavigating) return;
+  isNavigating = true;
+
+  const prevEl = document.getElementById('screen-' + current);
+  const nextEl = document.getElementById('screen-' + n);
+  if (!nextEl) { isNavigating = false; return; }
+
+  /* 1 — Marca la pantalla que sale: el CSS la sube + desvanece */
+  if (prevEl) {
+    prevEl.classList.add('leaving');
+    clearTimeout(navClearTimer);
+    navClearTimer = setTimeout(() => {
+      prevEl.classList.remove('leaving');
+    }, LEAVE_MS + 80);
   }
+
+  /* 2 — Mismo tick: desactiva todo y activa la nueva pantalla */
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + n).classList.add('active');
-  // Barra de progreso superior
-  const bar = document.getElementById('topProgress');
-  if (bar) bar.style.width = ((n / (TOTAL - 1)) * 100) + '%';
+  nextEl.classList.add('active');
+
   current = n;
   updateNav();
-  triggerAnimations(n);
+
+  /* 3 — Lanza animaciones internas tras un breve offset
+         (espera a que la transición de entrada arranque) */
+  setTimeout(() => {
+    triggerSectionAnimations(n);
+    isNavigating = false;
+  }, 140);
 }
 
 function nextScreen() { goTo(current + 1); }
 function prevScreen() { goTo(current - 1); }
 
-// Keyboard navigation
+/* ============================================================
+   TECLADO — ← → ↑ ↓ navegan; espacio LIBRE en inputs
+   ============================================================ */
 document.addEventListener('keydown', e => {
-  // No interceptar teclas cuando el usuario está escribiendo en un campo de texto
-  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); nextScreen(); }
-  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevScreen(); }
+  /* Devuelve el control completo si el foco está en un campo editable */
+  const tag = e.target.tagName;
+  if (tag === 'TEXTAREA' || tag === 'INPUT' || e.target.isContentEditable) return;
+
+  switch (e.key) {
+    case 'ArrowRight':
+    case 'ArrowDown':
+      e.preventDefault();
+      nextScreen();
+      break;
+    case 'ArrowLeft':
+    case 'ArrowUp':
+      e.preventDefault();
+      prevScreen();
+      break;
+    /* 'Space' no aparece aquí → funciona libre en cualquier contexto */
+  }
 });
 
-// ---- Animations on screen enter ----
-function triggerAnimations(n) {
+/* ============================================================
+   RUEDA DEL RATÓN — scroll natural entre secciones
+   ============================================================ */
+let wheelAccum  = 0;
+let wheelReset  = null;
+const WHEEL_THR = 90;   // píxeles acumulados antes de cambiar sección
+
+document.addEventListener('wheel', e => {
+  /* No interceptar si el scroll ocurre dentro de un área con overflow */
+  const tag = e.target.tagName;
+  if (tag === 'TEXTAREA' || tag === 'INPUT') return;
+  if (e.target.closest('.screen-scroll, [data-scrollable]')) return;
+
+  e.preventDefault();
+  wheelAccum += Math.abs(e.deltaY);
+
+  clearTimeout(wheelReset);
+  wheelReset = setTimeout(() => { wheelAccum = 0; }, 250);
+
+  if (wheelAccum >= WHEEL_THR) {
+    wheelAccum = 0;
+    e.deltaY > 0 ? nextScreen() : prevScreen();
+  }
+}, { passive: false });
+
+/* ============================================================
+   SWIPE TÁCTIL — trackpad y móvil
+   ============================================================ */
+let touchY0 = 0;
+let touchX0 = 0;
+
+document.addEventListener('touchstart', e => {
+  touchY0 = e.touches[0].clientY;
+  touchX0 = e.touches[0].clientX;
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  const tag = e.target.tagName;
+  if (tag === 'TEXTAREA' || tag === 'INPUT') return;
+  const dy = touchY0 - e.changedTouches[0].clientY;
+  const dx = touchX0 - e.changedTouches[0].clientX;
+  /* Swipe vertical de al menos 55px y predominante sobre horizontal */
+  if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 55) {
+    dy > 0 ? nextScreen() : prevScreen();
+  }
+}, { passive: true });
+
+/* ============================================================
+   ANIMACIONES INTERNAS DE SECCIÓN
+   ============================================================ */
+function triggerSectionAnimations(n) {
   const screen = document.getElementById('screen-' + n);
-  // Re-trigger CSS animations by forcing reflow
-  const anims = screen.querySelectorAll('[class*="anim-"]');
-  anims.forEach(el => {
-    el.style.animation = 'none';
-    el.offsetHeight; // reflow
-    el.style.animation = '';
+  if (!screen) return;
+
+  /* Reinicia animaciones CSS con reflow forzado */
+  screen.querySelectorAll('[class*="anim-"]').forEach(el => {
+    el.style.animationName = 'none';
+    void el.offsetWidth;          // reflow — rompe la caché de animación
+    el.style.animationName = '';  // restaura la clase CSS
   });
 
-  // Counters for screen 1
+  /* Contadores numéricos — pantalla 1 */
   if (n === 1) {
-    animateCounter('stat1', 94, '%', 1200);
-    animateCounter('stat2', 25.7, '%', 1400, 1);
+    setTimeout(() => animateCounter('stat1', 94,   '%', 1100, 0), 300);
+    setTimeout(() => animateCounter('stat2', 25.7, '%', 1350, 1), 480);
   }
 
-  // Progress bars screen 5
+  /* Barras de progreso — pantalla 5 */
   if (n === 5) {
-    document.querySelectorAll('.progress-bar').forEach(bar => {
-      bar.style.animation = 'none';
-      bar.offsetHeight;
-      bar.style.animation = 'progressFill 1.5s ease forwards';
+    screen.querySelectorAll('.progress-bar').forEach(bar => {
+      bar.style.animationName = 'none';
+      void bar.offsetWidth;
+      bar.style.animationName = 'progressFill';
     });
   }
 }
 
-function animateCounter(id, target, suffix, duration, decimals = 0) {
+/* Contador con easing ease-out cúbico */
+function animateCounter(id, target, suffix, duration, decimals) {
   const el = document.getElementById(id);
   if (!el) return;
-  const start = performance.now();
-  function step(ts) {
-    const progress = Math.min((ts - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    const val = (target * eased).toFixed(decimals);
-    el.textContent = val + suffix;
-    if (progress < 1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
+  const t0 = performance.now();
+  (function tick(ts) {
+    const p  = Math.min((ts - t0) / duration, 1);
+    const ep = 1 - Math.pow(1 - p, 3);
+    el.textContent = (target * ep).toFixed(decimals) + suffix;
+    if (p < 1) requestAnimationFrame(tick);
+  })(performance.now());
 }
 
-// ---- Pilar cards toggle ----
+/* ============================================================
+   PILARES — marco teórico
+   ============================================================ */
 function togglePilar(card) {
-  const isActive = card.classList.contains('pilar-active');
-  document.querySelectorAll('.pilar-active').forEach(c => {
-    c.classList.remove('pilar-active');
-    c.style.borderColor = '';
-    c.style.boxShadow = '';
-  });
-  if (!isActive) {
-    card.classList.add('pilar-active');
-    card.style.borderColor = 'rgba(37,99,235,0.7)';
-    card.style.boxShadow = '0 0 25px rgba(37,99,235,0.25)';
-  }
+  const wasActive = card.classList.contains('pilar-active');
+  document.querySelectorAll('.pilar-active').forEach(c => c.classList.remove('pilar-active'));
+  if (!wasActive) card.classList.add('pilar-active');
 }
 
-// ---- Demo ----
-// Detecta el contexto de la idea y devuelve datos coherentes
+/* ============================================================
+   DEMO — contexto dinámico según palabras clave
 function getDemoData(input) {
   const t = (input || '').toLowerCase();
 
@@ -2421,17 +2510,16 @@ function showTab(idx, ideaText) {
   }
 }
 
-// ---- Boot ----
+/* ============================================================
+   BOOT — el script está al final del body, DOM ya está listo
+   ============================================================ */
 initNav();
 updateNav();
 
-// Init tab styling
-document.addEventListener('DOMContentLoaded', () => {
-  const tabs = document.querySelectorAll('.tab-btn');
-  tabs.forEach((t, i) => {
-    if (i === 0) { t.style.color = '#60A5FA'; t.style.borderBottomColor = '#2563EB'; }
-    else { t.style.borderBottomColor = 'transparent'; }
-  });
+/* Estilos iniciales de las pestañas del demo */
+document.querySelectorAll('.tab-btn').forEach((t, i) => {
+  t.style.color = i === 0 ? '#60A5FA' : '';
+  t.style.borderBottomColor = i === 0 ? '#2563EB' : 'transparent';
 });
 </script>
 </body>
